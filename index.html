@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Surgery Department Cases</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#1FB6A6">
+<style>
+:root{
+  --bg:#0c0f10;--s1:#151a1b;--s2:#1c2224;--s3:#242b2d;
+  --border:#2a3234;--border2:#3a4446;
+  --teal:#1FB6A6;--teal-dim:rgba(31,182,166,.13);--teal-glow:rgba(31,182,166,.28);
+  --blue:#4A9EFF;--blue-dim:rgba(74,158,255,.13);
+  --green:#2ECC71;--green-dim:rgba(46,204,113,.13);
+  --red:#E74C3C;--red-dim:rgba(231,76,60,.13);
+  --amber:#F5A623;--amber-dim:rgba(245,166,35,.13);
+  --text:#eef2f2;--t2:#8fa0a0;--t3:#556;
+  --r:14px;--rs:10px;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
+
+.hdr{padding:20px 24px;display:flex;justify-content:space-between;align-items:center;background:linear-gradient(170deg,#082220 0%,#0c0f10 85%);border-bottom:1px solid var(--border);flex-wrap:wrap;gap:12px;}
+.hdr-left{display:flex;align-items:center;gap:12px;}
+.hdr-icon{font-size:1.8rem;filter:drop-shadow(0 0 10px var(--teal-glow));}
+.hdr h1{font-size:1.25rem;font-weight:800;}
+.hdr p{color:var(--t2);font-size:.78rem;margin-top:2px;}
+.hdr-actions{display:flex;gap:8px;flex-wrap:wrap;}
+
+.btn{background:var(--s2);border:1px solid var(--border2);color:var(--text);border-radius:var(--rs);padding:10px 16px;font-family:inherit;font-weight:700;font-size:.85rem;cursor:pointer;transition:.15s;display:flex;align-items:center;gap:6px;}
+.btn:hover{border-color:var(--teal);}
+.btn-primary{background:var(--teal);color:#04211d;border:none;}
+.btn-primary:hover{filter:brightness(1.08);}
+.btn-danger{background:var(--red-dim);color:var(--red);border:1px solid rgba(231,76,60,.3);}
+
+.wrap{max-width:1500px;margin:0 auto;padding:18px 20px 60px;}
+
+.tabs{display:flex;gap:8px;background:var(--s1);border:1px solid var(--border);border-radius:50px;padding:5px;margin-bottom:16px;width:fit-content;}
+.tab{padding:9px 20px;border-radius:50px;font-size:.85rem;font-weight:700;color:var(--t2);cursor:pointer;transition:.2s;white-space:nowrap;}
+.tab.active{background:var(--teal);color:#04211d;}
+
+.toolbar{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:14px;flex-wrap:wrap;}
+.searchbar input{background:var(--s1);border:1px solid var(--border);border-radius:var(--rs);padding:10px 14px;color:var(--text);font-family:inherit;font-size:.87rem;min-width:260px;}
+.searchbar input:focus{outline:none;border-color:var(--teal);}
+
+.table-scroll{overflow-x:auto;border:1px solid var(--border);border-radius:var(--r);background:var(--s1);}
+table{border-collapse:collapse;width:100%;min-width:1400px;}
+thead th{position:sticky;top:0;background:var(--s2);color:var(--teal);font-size:.72rem;text-transform:uppercase;letter-spacing:.03em;font-weight:800;padding:12px 14px;text-align:left;border-bottom:1px solid var(--border2);white-space:nowrap;}
+tbody td{padding:12px 14px;font-size:.82rem;border-bottom:1px solid var(--border);vertical-align:top;max-width:220px;}
+tbody td.wrap-cell{white-space:pre-wrap;word-break:break-word;}
+tbody td.nowrap{white-space:nowrap;}
+tbody tr{cursor:pointer;transition:.12s;}
+tbody tr:hover{background:var(--s2);}
+tbody tr:last-child td{border-bottom:none;}
+.pt-name{font-weight:800;color:var(--text);}
+.pill{display:inline-block;font-size:.7rem;font-weight:800;padding:3px 10px;border-radius:50px;background:var(--teal-dim);color:var(--teal);white-space:nowrap;}
+.pill-archived{background:rgba(255,255,255,.06);color:var(--t2);}
+.rowactions{display:flex;gap:6px;}
+.icon-btn{background:var(--s3);border:1px solid var(--border2);color:var(--text);border-radius:8px;width:30px;height:30px;font-size:.85rem;cursor:pointer;}
+.icon-btn:hover{border-color:var(--teal);}
+
+.empty{text-align:center;padding:60px 20px;color:var(--t2);}
+.empty-icon{font-size:2.4rem;margin-bottom:10px;display:block;}
+.loading{text-align:center;padding:40px;color:var(--t2);}
+
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:50;display:none;align-items:center;justify-content:center;padding:20px;}
+.overlay.active{display:flex;}
+.sheet{background:var(--bg);width:100%;max-width:760px;max-height:90vh;overflow-y:auto;border-radius:16px;border:1px solid var(--border);animation:up .2s ease;}
+@keyframes up{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+.sheet-hdr{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;border-bottom:1px solid var(--border);position:sticky;top:0;background:var(--bg);z-index:5;}
+.sheet-hdr h2{font-size:1.05rem;font-weight:800;}
+.close-btn{background:var(--s2);border:none;color:var(--text);width:32px;height:32px;border-radius:50%;font-size:1.1rem;cursor:pointer;}
+.sheet-body{padding:20px;}
+
+.field{margin-bottom:14px;}
+.field label{display:block;font-size:.76rem;font-weight:800;color:var(--teal);margin-bottom:6px;text-transform:uppercase;letter-spacing:.02em;}
+.field input,.field textarea,.field select{width:100%;background:var(--s2);border:1px solid var(--border);border-radius:var(--rs);padding:11px 13px;color:var(--text);font-family:inherit;font-size:.88rem;}
+.field textarea{min-height:60px;resize:vertical;}
+.field input:focus,.field textarea:focus,.field select:focus{outline:none;border-color:var(--teal);}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;}
+@media(max-width:640px){.grid2,.grid3{grid-template-columns:1fr;}}
+
+.subhdr{font-size:.78rem;font-weight:800;color:var(--t2);margin:18px 0 10px;padding-bottom:6px;border-bottom:1px dashed var(--border2);text-transform:uppercase;letter-spacing:.03em;}
+
+.settings-list{margin-bottom:16px;}
+.settings-row{display:flex;gap:8px;align-items:center;background:var(--s2);border:1px solid var(--border);border-radius:var(--rs);padding:8px 10px;margin-bottom:8px;}
+.settings-row input{flex:1;background:transparent;border:none;color:var(--text);font-family:inherit;font-size:.88rem;}
+.settings-row input:focus{outline:none;}
+.settings-row .rm{background:var(--red-dim);color:var(--red);border:none;border-radius:6px;width:26px;height:26px;cursor:pointer;flex-shrink:0;}
+.add-row-btn{width:100%;background:var(--s2);border:1px dashed var(--border2);color:var(--teal);border-radius:var(--rs);padding:10px;font-family:inherit;font-weight:700;font-size:.83rem;cursor:pointer;}
+.hint{font-size:.74rem;color:var(--t2);margin-bottom:10px;}
+
+.toast{position:fixed;bottom:26px;left:50%;transform:translateX(-50%);background:var(--s3);border:1px solid var(--border2);color:var(--text);padding:10px 20px;border-radius:50px;font-size:.85rem;font-weight:700;z-index:100;opacity:0;transition:.3s;pointer-events:none;}
+.toast.show{opacity:1;}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div class="hdr-left">
+    <span class="hdr-icon">🏥</span>
+    <div>
+      <h1>Surgery Department Cases</h1>
+      <p>Full tracking for every case in the department</p>
+    </div>
+  </div>
+  <div class="hdr-actions">
+    <button class="btn" onclick="openSettings()">⚙️ Settings</button>
+    <button class="btn btn-primary" onclick="openForm()">＋ New Case</button>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="tabs">
+    <div class="tab active" data-tab="active" onclick="switchTab('active')">Active Cases</div>
+    <div class="tab" data-tab="archived" onclick="switchTab('archived')">Archive</div>
+  </div>
+
+  <div class="toolbar">
+    <div class="searchbar"><input type="text" id="searchInput" placeholder="🔍 Search by name or consultant..." oninput="renderList()"></div>
+  </div>
+
+  <div id="listArea"><div class="loading">Loading...</div></div>
+</div>
+
+<!-- Add/Edit Sheet -->
+<div class="overlay" id="formOverlay">
+  <div class="sheet">
+    <div class="sheet-hdr">
+      <h2 id="formTitle">New Case</h2>
+      <button class="close-btn" onclick="closeForm()">✕</button>
+    </div>
+    <div class="sheet-body">
+      <input type="hidden" id="f_id">
+      <div class="field"><label>Pt. Name *</label><input id="f_ptName" placeholder="Patient full name"></div>
+      <div class="grid3">
+        <div class="field"><label>Consultant</label><select id="f_consultant"></select></div>
+        <div class="field"><label>Department</label><select id="f_department"></select></div>
+        <div class="field"><label>Age</label><input id="f_age" type="number" placeholder="Age"></div>
+      </div>
+      <div class="grid2">
+        <div class="field"><label>Day / Admission</label><input id="f_admission" type="date"></div>
+        <div class="field"><label>Day out</label><input id="f_dayOut" type="date"></div>
+      </div>
+      <div class="field"><label>Diagnosis</label><textarea id="f_diagnosis" placeholder="Diagnosis"></textarea></div>
+
+      <div class="subhdr">Clinical Status</div>
+      <div class="grid2">
+        <div class="field"><label>Vitality</label><input id="f_vitality" placeholder="BP / PR / Temp / RR / SpO2"></div>
+        <div class="field"><label>Feeding</label><input id="f_feeding" placeholder="NPO / Oral / NG tube..."></div>
+      </div>
+      <div class="field"><label>Drain</label><input id="f_drain" placeholder="Drain type & amount"></div>
+
+      <div class="subhdr">Investigation</div>
+      <div class="field"><label>Investigation</label><textarea id="f_investigation" placeholder="General investigation notes"></textarea></div>
+      <div class="grid2">
+        <div class="field"><label>Labs</label><textarea id="f_labs" placeholder="Lab results"></textarea></div>
+        <div class="field"><label>Rads</label><textarea id="f_rads" placeholder="Radiology results"></textarea></div>
+      </div>
+
+      <div class="field"><label>Notes</label><textarea id="f_notes" placeholder="Additional notes"></textarea></div>
+
+      <button class="btn btn-primary" style="width:100%;justify-content:center;padding:13px;margin-top:6px;" onclick="saveCase()">💾 Save Case</button>
+    </div>
+  </div>
+</div>
+
+<!-- Settings Sheet -->
+<div class="overlay" id="settingsOverlay">
+  <div class="sheet">
+    <div class="sheet-hdr">
+      <h2>Settings</h2>
+      <button class="close-btn" onclick="closeSettings()">✕</button>
+    </div>
+    <div class="sheet-body">
+      <div class="subhdr">Consultants (max 8)</div>
+      <div class="hint">These names appear in the Consultant dropdown when adding a case.</div>
+      <div class="settings-list" id="consultantsList"></div>
+      <button class="add-row-btn" id="addConsultantBtn" onclick="addSettingsRow('consultants')">＋ Add consultant</button>
+
+      <div class="subhdr" style="margin-top:24px;">Departments</div>
+      <div class="hint">Customize the department/unit list (e.g. Surgery A, Surgery B, ICU 6th Floor...).</div>
+      <div class="settings-list" id="departmentsList"></div>
+      <button class="add-row-btn" onclick="addSettingsRow('departments')">＋ Add department</button>
+
+      <button class="btn btn-primary" style="width:100%;justify-content:center;padding:13px;margin-top:20px;" onclick="saveSettings()">💾 Save Settings</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const API_CASES = '/api/cases';
+const API_CONFIG = '/api/config';
+let cases = [];
+let config = { consultants: [], departments: [] };
+let currentTab = 'active';
+
+function esc(s){
+  return String(s??'').replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+}
+
+async function loadConfig(){
+  try{
+    const r = await fetch(API_CONFIG);
+    config = await r.json();
+  }catch(e){
+    config = { consultants: [], departments: [] };
+  }
+}
+
+async function loadCases(){
+  await loadConfig();
+  await fetchList();
+}
+
+async function fetchList(){
+  document.getElementById('listArea').innerHTML = '<div class="loading">Loading...</div>';
+  try{
+    const q = currentTab === 'archived' ? '?archived=1' : '';
+    const r = await fetch(API_CASES + q);
+    const data = await r.json();
+    cases = Array.isArray(data) ? data : [];
+  }catch(e){
+    cases = [];
+    showToast('Failed to load data');
+  }
+  renderList();
+}
+
+function switchTab(tab){
+  currentTab = tab;
+  document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active', t.dataset.tab===tab));
+  fetchList();
+}
+
+function renderList(){
+  const q = document.getElementById('searchInput').value.trim().toLowerCase();
+  let list = cases.filter(c=>{
+    if(q && !(c.ptName||'').toLowerCase().includes(q) && !(c.consultant||'').toLowerCase().includes(q)) return false;
+    return true;
+  });
+  list.sort((a,b)=> (b.admission||'').localeCompare(a.admission||''));
+
+  const area = document.getElementById('listArea');
+  if(list.length===0){
+    area.innerHTML = `<div class="empty"><span class="empty-icon">🩺</span>No cases here yet</div>`;
+    return;
+  }
+
+  const rows = list.map(c=>{
+    const isArchived = !!c.dayOut;
+    return `<tr onclick="openDetail('${c.id}')">
+      <td class="nowrap pt-name">${esc(c.ptName)}</td>
+      <td class="nowrap">${esc(c.consultant)||'-'}</td>
+      <td class="nowrap">${esc(c.department)||'-'}</td>
+      <td class="nowrap">${esc(c.age)||'-'}</td>
+      <td class="wrap-cell">${esc(c.diagnosis)||'-'}</td>
+      <td class="nowrap">${esc(c.admission)||'-'}</td>
+      <td class="wrap-cell">${esc(c.vitality)||'-'}</td>
+      <td class="wrap-cell">${esc(c.feeding)||'-'}</td>
+      <td class="wrap-cell">${esc(c.drain)||'-'}</td>
+      <td class="wrap-cell">${esc(c.investigation)||'-'}</td>
+      <td class="nowrap">${esc(c.dayOut)||(isArchived?'-':'<span class="pill">In dept</span>')}</td>
+      <td class="wrap-cell">${esc(c.labs)||'-'}</td>
+      <td class="wrap-cell">${esc(c.rads)||'-'}</td>
+      <td class="wrap-cell">${esc(c.notes)||'-'}</td>
+      <td class="nowrap"><div class="rowactions">
+        <button class="icon-btn" onclick="event.stopPropagation();openDetail('${c.id}')" title="Edit">✏️</button>
+        <button class="icon-btn" onclick="event.stopPropagation();deleteCase('${c.id}')" title="Delete">🗑️</button>
+      </div></td>
+    </tr>`;
+  }).join('');
+
+  area.innerHTML = `
+  <div class="table-scroll">
+  <table>
+    <thead><tr>
+      <th>Pt. Name</th><th>Consultant</th><th>Department</th><th>Age</th><th>Diagnosis</th>
+      <th>Day / Admission</th><th>Vitality</th><th>Feeding</th><th>Drain</th><th>Investigation</th>
+      <th>Day out</th><th>Labs</th><th>Rads</th><th>Notes</th><th></th>
+    </tr></thead>
+    <tbody>${rows}</tbody>
+  </table>
+  </div>`;
+}
+
+function fillSelect(id, options, selected){
+  const el = document.getElementById(id);
+  el.innerHTML = `<option value="">-- Select --</option>` + options.map(o=>
+    `<option value="${esc(o)}" ${o===selected?'selected':''}>${esc(o)}</option>`
+  ).join('');
+}
+
+function openForm(existing){
+  document.getElementById('formTitle').textContent = existing ? 'Edit Case' : 'New Case';
+  const f = existing || {};
+  fillSelect('f_consultant', config.consultants||[], f.consultant);
+  fillSelect('f_department', config.departments||[], f.department);
+  document.getElementById('f_id').value = f.id || '';
+  document.getElementById('f_ptName').value = f.ptName || '';
+  document.getElementById('f_age').value = f.age || '';
+  document.getElementById('f_admission').value = f.admission || '';
+  document.getElementById('f_dayOut').value = f.dayOut || '';
+  document.getElementById('f_diagnosis').value = f.diagnosis || '';
+  document.getElementById('f_vitality').value = f.vitality || '';
+  document.getElementById('f_feeding').value = f.feeding || '';
+  document.getElementById('f_drain').value = f.drain || '';
+  document.getElementById('f_investigation').value = f.investigation || '';
+  document.getElementById('f_labs').value = f.labs || '';
+  document.getElementById('f_rads').value = f.rads || '';
+  document.getElementById('f_notes').value = f.notes || '';
+  document.getElementById('formOverlay').classList.add('active');
+}
+function closeForm(){ document.getElementById('formOverlay').classList.remove('active'); }
+
+async function saveCase(){
+  const ptName = document.getElementById('f_ptName').value.trim();
+  if(!ptName){ showToast('Please enter the patient name'); return; }
+  const id = document.getElementById('f_id').value || (Date.now().toString());
+  const item = {
+    id,
+    ptName,
+    consultant: document.getElementById('f_consultant').value,
+    department: document.getElementById('f_department').value,
+    age: document.getElementById('f_age').value.trim(),
+    admission: document.getElementById('f_admission').value,
+    dayOut: document.getElementById('f_dayOut').value,
+    diagnosis: document.getElementById('f_diagnosis').value.trim(),
+    vitality: document.getElementById('f_vitality').value.trim(),
+    feeding: document.getElementById('f_feeding').value.trim(),
+    drain: document.getElementById('f_drain').value.trim(),
+    investigation: document.getElementById('f_investigation').value.trim(),
+    labs: document.getElementById('f_labs').value.trim(),
+    rads: document.getElementById('f_rads').value.trim(),
+    notes: document.getElementById('f_notes').value.trim(),
+  };
+  try{
+    const r = await fetch(`${API_CASES}/save`, {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(item)});
+    const res = await r.json();
+    if(res.error) throw new Error(res.error);
+    closeForm();
+    showToast('Saved successfully ✅');
+    await fetchList();
+  }catch(e){
+    console.error('save error:', e);
+    showToast('Error while saving: ' + e.message);
+  }
+}
+
+function openDetail(id){
+  const c = cases.find(x=>String(x.id)===String(id));
+  if(!c) return;
+  openForm(c);
+}
+
+async function deleteCase(id){
+  if(!confirm('Are you sure you want to delete this case?')) return;
+  try{
+    const r = await fetch(`${API_CASES}/delete`, {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({id})});
+    const res = await r.json();
+    if(res.error) throw new Error(res.error);
+    showToast('Deleted');
+    await fetchList();
+  }catch(e){
+    console.error('delete error:', e);
+    showToast('Error while deleting: ' + e.message);
+  }
+}
+
+// ---------- Settings ----------
+function openSettings(){
+  renderSettingsList('consultants');
+  renderSettingsList('departments');
+  document.getElementById('settingsOverlay').classList.add('active');
+}
+function closeSettings(){ document.getElementById('settingsOverlay').classList.remove('active'); }
+
+function renderSettingsList(key){
+  const wrap = document.getElementById(key+'List');
+  const list = config[key] || [];
+  wrap.innerHTML = list.map((v,i)=>`
+    <div class="settings-row">
+      <input value="${esc(v)}" data-key="${key}" data-idx="${i}">
+      <button class="rm" onclick="removeSettingsRow('${key}', ${i})">✕</button>
+    </div>`).join('');
+  if(key==='consultants'){
+    document.getElementById('addConsultantBtn').style.display = list.length>=8 ? 'none' : 'block';
+  }
+}
+
+function addSettingsRow(key){
+  config[key] = config[key] || [];
+  if(key==='consultants' && config[key].length>=8){ showToast('Maximum 8 consultants'); return; }
+  config[key].push('');
+  renderSettingsList(key);
+}
+function removeSettingsRow(key, idx){
+  config[key].splice(idx,1);
+  renderSettingsList(key);
+}
+
+async function saveSettings(){
+  // collect current input values back into config
+  ['consultants','departments'].forEach(key=>{
+    const inputs = document.querySelectorAll(`#${key}List input`);
+    config[key] = Array.from(inputs).map(i=>i.value.trim()).filter(v=>v);
+  });
+  if(config.consultants.length>8) config.consultants = config.consultants.slice(0,8);
+  try{
+    for(const key of ['consultants','departments']){
+      const r = await fetch(`${API_CONFIG}/save`, {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({key, value: config[key]})});
+      const res = await r.json();
+      if(res.error) throw new Error(res.error);
+    }
+    showToast('Settings saved ✅');
+    closeSettings();
+  }catch(e){
+    console.error('save settings error:', e);
+    showToast('Error saving settings: ' + e.message);
+  }
+}
+
+let toastTimer;
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>t.classList.remove('show'), 2200);
+}
+
+loadCases();
+</script>
+</body>
+</html>
