@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Surgery Department Cases</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#ffffff">
+<style>
+:root{
+  --bg:#f5f6f7;--surface:#ffffff;--surface-2:#fafbfb;
+  --border:#e4e7e9;--border2:#d7dbdd;
+  --accent:#0e9488;--accent-dim:#e6f5f3;--accent-text:#0b7b71;
+  --text:#1b2528;--t2:#6b767b;--t3:#9aa3a7;
+  --red:#c0392b;--red-dim:#fbeae8;
+  --amber:#b9770e;--amber-dim:#fcf3e3;
+  --r:12px;--rs:9px;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{-webkit-text-size-adjust:100%;}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
+
+.hdr{padding:16px 24px;display:flex;justify-content:space-between;align-items:center;background:var(--surface);border-bottom:1px solid var(--border);flex-wrap:wrap;gap:12px;}
+.hdr-left{display:flex;align-items:center;gap:12px;min-width:0;}
+.hdr-icon{font-size:1.6rem;flex-shrink:0;}
+.hdr h1{font-size:1.1rem;font-weight:800;color:var(--text);}
+.hdr p{color:var(--t2);font-size:.76rem;margin-top:2px;}
+.hdr-actions{display:flex;gap:8px;flex-wrap:wrap;}
+
+.btn{background:var(--surface);border:1px solid var(--border2);color:var(--text);border-radius:var(--rs);padding:10px 16px;font-family:inherit;font-weight:700;font-size:.85rem;cursor:pointer;transition:.15s;display:flex;align-items:center;gap:6px;white-space:nowrap;}
+.btn:hover{border-color:var(--accent);}
+.btn-primary{background:var(--accent);color:#fff;border:none;}
+.btn-primary:hover{filter:brightness(1.08);}
+.btn-danger{background:var(--red-dim);color:var(--red);border:1px solid rgba(192,57,43,.25);}
+
+.wrap{max-width:1500px;margin:0 auto;padding:18px 16px 60px;width:100%;}
+
+.tabs{display:flex;gap:6px;background:var(--surface);border:1px solid var(--border);border-radius:50px;padding:5px;margin-bottom:16px;width:fit-content;max-width:100%;}
+.tab{padding:9px 20px;border-radius:50px;font-size:.85rem;font-weight:700;color:var(--t2);cursor:pointer;transition:.2s;white-space:nowrap;}
+.tab.active{background:var(--accent);color:#fff;}
+
+.toolbar{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:18px;flex-wrap:wrap;}
+.searchbar{flex:1;min-width:200px;}
+.searchbar input{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:var(--rs);padding:10px 14px;color:var(--text);font-family:inherit;font-size:.87rem;}
+.searchbar input:focus{outline:none;border-color:var(--accent);}
+
+.empty{text-align:center;padding:60px 20px;color:var(--t2);}
+.empty-icon{font-size:2.2rem;margin-bottom:10px;display:block;}
+.loading{text-align:center;padding:40px;color:var(--t2);font-size:.85rem;}
+
+/* ---- Department sections & case cards ---- */
+.dept-section{margin-bottom:26px;}
+.dept-header{display:flex;align-items:center;gap:10px;padding-bottom:8px;margin-bottom:12px;border-bottom:2px solid var(--border);}
+.dept-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+.dept-header h3{font-size:.95rem;font-weight:800;color:var(--text);letter-spacing:.01em;}
+.dept-count{background:var(--surface-2);border:1px solid var(--border);color:var(--t2);font-size:.72rem;font-weight:800;padding:2px 9px;border-radius:50px;}
+
+.cases-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;}
+
+.case-card{background:var(--surface);border:1px solid var(--border);border-left:4px solid var(--border2);border-radius:var(--r);padding:14px;cursor:pointer;transition:.15s;display:flex;flex-direction:column;gap:8px;min-width:0;}
+.case-card:hover{border-color:var(--accent);box-shadow:0 2px 10px rgba(0,0,0,.04);}
+.cc-top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;}
+.cc-name{font-weight:800;font-size:.98rem;color:var(--text);word-break:break-word;}
+.cc-sub{font-size:.74rem;color:var(--t2);margin-top:2px;}
+.cc-actions{display:flex;gap:6px;flex-shrink:0;}
+.icon-btn{background:var(--surface-2);border:1px solid var(--border);color:var(--text);border-radius:8px;width:30px;height:30px;font-size:.85rem;cursor:pointer;flex-shrink:0;}
+.icon-btn:hover{border-color:var(--accent);}
+
+.cc-tags{display:flex;flex-wrap:wrap;align-items:center;gap:10px;font-size:.76rem;color:var(--t2);}
+.cc-tag{display:inline-flex;align-items:center;gap:5px;white-space:nowrap;}
+.cc-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.status-pill{font-size:.68rem;font-weight:800;padding:3px 9px;border-radius:50px;background:var(--surface-2);border:1px solid var(--border);color:var(--t2);}
+.status-pill.active{color:var(--accent-text);border-color:rgba(14,148,136,.3);background:var(--accent-dim);}
+
+.cc-diag{font-size:.82rem;color:var(--text);line-height:1.4;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;word-break:break-word;}
+.cc-meta{display:flex;flex-wrap:wrap;gap:10px;font-size:.74rem;color:var(--t2);border-top:1px dashed var(--border);padding-top:8px;}
+
+.overlay{position:fixed;inset:0;background:rgba(15,20,22,.45);z-index:50;display:none;align-items:center;justify-content:center;padding:16px;}
+.overlay.active{display:flex;}
+.sheet{background:var(--bg);width:100%;max-width:760px;max-height:90vh;overflow-y:auto;-webkit-overflow-scrolling:touch;border-radius:16px;border:1px solid var(--border);animation:up .2s ease;}
+.pw-sheet{max-width:380px;}
+@keyframes up{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+.sheet-hdr{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;border-bottom:1px solid var(--border);position:sticky;top:0;background:var(--surface);z-index:5;}
+.sheet-hdr h2{font-size:1.05rem;font-weight:800;color:var(--text);}
+.close-btn{background:var(--surface-2);border:1px solid var(--border);color:var(--text);width:32px;height:32px;border-radius:50%;font-size:1.05rem;cursor:pointer;flex-shrink:0;}
+.sheet-body{padding:20px;}
+
+.field{margin-bottom:14px;min-width:0;}
+.field label{display:block;font-size:.76rem;font-weight:800;color:var(--accent-text);margin-bottom:6px;text-transform:uppercase;letter-spacing:.02em;}
+.field input,.field textarea,.field select{width:100%;background:var(--surface);border:1px solid var(--border2);border-radius:var(--rs);padding:11px 13px;color:var(--text);font-family:inherit;font-size:.88rem;}
+.field textarea{min-height:60px;resize:vertical;}
+.field input:focus,.field textarea:focus,.field select:focus{outline:none;border-color:var(--accent);}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;}
+@media(max-width:640px){.grid2,.grid3{grid-template-columns:1fr;}}
+
+.name-field input{font-size:1.1rem;font-weight:800;padding:13px;}
+
+.subhdr{font-size:.78rem;font-weight:800;color:var(--t2);margin:18px 0 10px;padding-bottom:6px;border-bottom:1px dashed var(--border2);text-transform:uppercase;letter-spacing:.03em;}
+
+.settings-list{margin-bottom:16px;}
+.settings-row{display:flex;gap:8px;align-items:center;background:var(--surface);border:1px solid var(--border);border-radius:var(--rs);padding:8px 10px;margin-bottom:8px;}
+.settings-row input{flex:1;min-width:0;background:transparent;border:none;color:var(--text);font-family:inherit;font-size:.88rem;}
+.settings-row input:focus{outline:none;}
+.settings-row .rm{background:var(--red-dim);color:var(--red);border:none;border-radius:6px;width:26px;height:26px;cursor:pointer;flex-shrink:0;}
+.add-row-btn{width:100%;background:var(--surface);border:1px dashed var(--border2);color:var(--accent-text);border-radius:var(--rs);padding:10px;font-family:inherit;font-weight:700;font-size:.83rem;cursor:pointer;text-align:center;display:block;}
+.hint{font-size:.74rem;color:var(--t2);margin-bottom:10px;}
+
+/* ---- Attachments ---- */
+.attach-list{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:12px;}
+.attach-item{position:relative;width:84px;}
+.attach-link{display:block;text-decoration:none;color:inherit;}
+.attach-thumb{width:84px;height:84px;border-radius:10px;background:var(--surface-2);border:1px solid var(--border2);display:flex;align-items:center;justify-content:center;font-size:1.7rem;overflow:hidden;}
+.attach-thumb img{width:100%;height:100%;object-fit:cover;}
+.attach-name{font-size:.63rem;color:var(--t2);margin-top:4px;text-align:center;word-break:break-word;line-height:1.2;max-height:2.4em;overflow:hidden;}
+.attach-rm{position:absolute;top:-7px;right:-7px;background:var(--red);color:#fff;border:2px solid var(--bg);border-radius:50%;width:22px;height:22px;font-size:.72rem;cursor:pointer;line-height:1;}
+.attach-loading{font-size:.78rem;color:var(--t2);padding:10px 0;}
+
+.toast{position:fixed;bottom:26px;left:50%;transform:translateX(-50%);background:var(--text);color:#fff;padding:10px 20px;border-radius:50px;font-size:.85rem;font-weight:700;z-index:100;opacity:0;transition:.3s;pointer-events:none;max-width:90vw;text-align:center;}
+.toast.show{opacity:1;}
+
+/* ---- Lightbox (in-browser preview) ---- */
+.lightbox{position:fixed;inset:0;background:rgba(10,14,15,.9);z-index:200;display:none;align-items:center;justify-content:center;padding:24px;}
+.lightbox.active{display:flex;}
+.lightbox img{max-width:100%;max-height:100%;border-radius:8px;}
+.lightbox-close{position:absolute;top:18px;right:18px;background:rgba(255,255,255,.12);border:none;color:#fff;width:38px;height:38px;border-radius:50%;font-size:1.2rem;cursor:pointer;}
+.lightbox-file{background:var(--surface);border-radius:12px;padding:28px;text-align:center;max-width:320px;}
+.lightbox-file a{color:var(--accent-text);font-weight:700;}
+
+@media(max-width:480px){
+  .wrap{padding:14px 10px 50px;}
+  .hdr{padding:14px 12px;}
+  .hdr h1{font-size:1.02rem;}
+  .hdr p{font-size:.7rem;}
+  .btn{padding:9px 12px;font-size:.8rem;}
+  .cases-grid{grid-template-columns:1fr;}
+  .case-card{padding:12px;}
+  .sheet-body{padding:14px;}
+}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div class="hdr-left">
+    <span class="hdr-icon">🏥</span>
+    <div>
+      <h1>Surgery Department Cases</h1>
+      <p>Full tracking for every case in the department</p>
+    </div>
+  </div>
+  <div class="hdr-actions">
+    <button class="btn" onclick="openSettings()">⚙️ Settings</button>
+    <button class="btn btn-primary" onclick="openForm()">＋ New Case</button>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="tabs">
+    <div class="tab active" data-tab="active" onclick="switchTab('active')">Active Cases</div>
+    <div class="tab" data-tab="archived" onclick="switchTab('archived')">Archive</div>
+  </div>
+
+  <div class="toolbar">
+    <div class="searchbar"><input type="text" id="searchInput" placeholder="🔍 Search by name or consultant..." oninput="renderList()"></div>
+  </div>
+
+  <div id="listArea"><div class="loading">Loading...</div></div>
+</div>
+
+<!-- Add/Edit Sheet -->
+<div class="overlay" id="formOverlay">
+  <div class="sheet">
+    <div class="sheet-hdr">
+      <h2 id="formTitle">New Case</h2>
+      <button class="close-btn" onclick="closeForm()">✕</button>
+    </div>
+    <div class="sheet-body">
+      <input type="hidden" id="f_id">
+
+      <!-- Senior: always the very first option in the form -->
+      <div class="field"><label>Senior</label><select id="f_senior"></select></div>
+
+      <div class="field name-field"><label>Pt. Name *</label><input id="f_ptName" placeholder="Patient full name"></div>
+
+      <div class="grid3">
+        <div class="field"><label>Age</label><input id="f_age" type="number" placeholder="Age"></div>
+        <div class="field"><label>Day / Admission</label><input id="f_admission" type="date"></div>
+        <div class="field"><label>Day out</label><input id="f_dayOut" type="date"></div>
+      </div>
+      <div class="field"><label>Diagnosis</label><textarea id="f_diagnosis" placeholder="Diagnosis"></textarea></div>
+
+      <div class="subhdr">Clinical Status</div>
+      <div class="grid2">
+        <div class="field"><label>Vitality</label><input id="f_vitality" placeholder="BP / PR / Temp / RR / SpO2"></div>
+        <div class="field"><label>Feeding</label><input id="f_feeding" placeholder="NPO / Oral / NG tube..."></div>
+      </div>
+      <div class="field"><label>Drain</label><input id="f_drain" placeholder="Drain type & amount"></div>
+
+      <div class="subhdr">Investigation</div>
+      <div class="field"><label>Investigation</label><textarea id="f_investigation" placeholder="General investigation notes"></textarea></div>
+      <div class="grid2">
+        <div class="field"><label>Labs</label><textarea id="f_labs" placeholder="Lab results"></textarea></div>
+        <div class="field"><label>Rads</label><textarea id="f_rads" placeholder="Radiology results"></textarea></div>
+      </div>
+
+      <div class="field"><label>Notes</label><textarea id="f_notes" placeholder="Additional notes"></textarea></div>
+
+      <div class="subhdr">Attachments</div>
+      <div class="hint">Upload photos, X-rays, lab reports, or any files related to this case. Tap a file to preview it right in the browser.</div>
+      <div id="attachArea">
+        <div class="attach-list" id="attachList"></div>
+        <label class="add-row-btn">＋ Add photo / file
+          <input type="file" id="attachInput" multiple style="display:none" onchange="handleAttachFiles(this.files)">
+        </label>
+      </div>
+
+      <!-- Consultant / Department: assignment info, kept at the bottom -->
+      <div class="subhdr">Assignment</div>
+      <div class="grid2">
+        <div class="field"><label>Consultant</label><select id="f_consultant"></select></div>
+        <div class="field"><label>Department</label><select id="f_department"></select></div>
+      </div>
+
+      <button class="btn btn-primary" style="width:100%;justify-content:center;padding:13px;margin-top:16px;" onclick="saveCase()">💾 Save Case</button>
+    </div>
+  </div>
+</div>
+
+<!-- Settings Sheet -->
+<div class="overlay" id="settingsOverlay">
+  <div class="sheet">
+    <div class="sheet-hdr">
+      <h2>Settings</h2>
+      <button class="close-btn" onclick="closeSettings()">✕</button>
+    </div>
+    <div class="sheet-body">
+      <div class="subhdr">Seniors</div>
+      <div class="hint">These names appear in the Senior dropdown, at the top of New Case. Add as many as you need.</div>
+      <div class="settings-list" id="seniorsList"></div>
+      <button class="add-row-btn" onclick="addSettingsRow('seniors')">＋ Add senior</button>
+
+      <div class="subhdr" style="margin-top:24px;">Consultants</div>
+      <div class="hint">These names appear in the Consultant dropdown when adding a case. Add as many as you need.</div>
+      <div class="settings-list" id="consultantsList"></div>
+      <button class="add-row-btn" onclick="addSettingsRow('consultants')">＋ Add consultant</button>
+
+      <div class="subhdr" style="margin-top:24px;">Departments</div>
+      <div class="hint">Customize the department/unit list (e.g. Surgery A, Surgery B, ICU 6th Floor...). Cases are grouped and color-coded by department.</div>
+      <div class="settings-list" id="departmentsList"></div>
+      <button class="add-row-btn" onclick="addSettingsRow('departments')">＋ Add department</button>
+
+      <div class="subhdr" style="margin-top:24px;">Security</div>
+      <div class="hint">Leave blank to keep the current password. This password is required to open Settings and to delete a case.</div>
+      <div class="field"><input type="password" id="newPasswordInput" placeholder="Set a new password (optional)"></div>
+
+      <button class="btn btn-primary" style="width:100%;justify-content:center;padding:13px;margin-top:20px;" onclick="saveSettings()">💾 Save Settings</button>
+    </div>
+  </div>
+</div>
+
+<!-- Password Sheet -->
+<div class="overlay" id="pwOverlay">
+  <div class="sheet pw-sheet">
+    <div class="sheet-hdr">
+      <h2 id="pwTitle">🔒 Password Required</h2>
+      <button class="close-btn" onclick="closePasswordModal()">✕</button>
+    </div>
+    <div class="sheet-body">
+      <div class="field">
+        <label>Password</label>
+        <input type="password" id="pwInput" placeholder="Enter password" autocomplete="off" onkeydown="if(event.key==='Enter'){event.preventDefault();submitPassword();}">
+      </div>
+      <button class="btn btn-primary" style="width:100%;justify-content:center;padding:13px;" onclick="submitPassword()">Confirm</button>
+    </div>
+  </div>
+</div>
+
+<!-- In-browser file/photo preview -->
+<div class="lightbox" id="lightbox" onclick="if(event.target===this)closeLightbox()">
+  <button class="lightbox-close" onclick="closeLightbox()">✕</button>
+  <div id="lightboxContent"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const API_CASES = '/api/cases';
+const API_CONFIG = '/api/config';
+const DEFAULT_PASSWORD = '1234';
+let cases = [];               // lightweight list (no attachment data) for fast loading
+let config = { seniors: [], consultants: [], departments: [], password: '' };
+let currentTab = 'active';
+let currentAttachments = [];
+let loadingAttachmentsFor = null;
+const MAX_FILE_MB = 8;
+
+function esc(s){
+  return String(s??'').replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+}
+
+/* ---------- color helpers (used only as small side accents, not full-page color) ---------- */
+const colorCache = {};
+function strHash(str){
+  str = String(str||'');
+  let h = 0;
+  for(let i=0;i<str.length;i++){ h = (h*31 + str.charCodeAt(i)) >>> 0; }
+  return h;
+}
+function colorFor(str){
+  const key = (str && String(str).trim()) || '__none__';
+  if(colorCache[key]) return colorCache[key];
+  const hue = strHash(key) % 360;
+  const c = {
+    solid: `hsl(${hue},55%,45%)`,
+    border: `hsl(${hue},55%,45%)`
+  };
+  colorCache[key] = c;
+  return c;
+}
+
+/* ---------- load ---------- */
+async function loadConfig(){
+  try{
+    const r = await fetch(API_CONFIG);
+    const data = await r.json();
+    config = Object.assign({ seniors: [], consultants: [], departments: [], password: '' }, data);
+  }catch(e){
+    config = { seniors: [], consultants: [], departments: [], password: '' };
+  }
+}
+
+async function loadCases(){
+  await loadConfig();
+  await fetchList();
+}
+
+// Fast list fetch: the API returns cases WITHOUT attachment data (just an attachCount),
+// so switching tabs / searching stays quick even with many photos attached to cases.
+async function fetchList(){
+  document.getElementById('listArea').innerHTML = '<div class="loading">Loading...</div>';
+  try{
+    const q = currentTab === 'archived' ? '?archived=1' : '';
+    const r = await fetch(API_CASES + q);
+    const data = await r.json();
+    cases = Array.isArray(data) ? data : [];
+  }catch(e){
+    cases = [];
+    showToast('Failed to load data');
+  }
+  renderList();
+}
+
+function switchTab(tab){
+  currentTab = tab;
+  document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active', t.dataset.tab===tab));
+  fetchList();
+}
+
+/* ---------- grouping + rendering ---------- */
+function groupByDepartment(list){
+  const order = (config.departments||[]).filter(Boolean);
+  const groups = {};
+  list.forEach(c=>{
+    const d = (c.department && c.department.trim()) ? c.department.trim() : '__none__';
+    (groups[d] = groups[d] || []).push(c);
+  });
+  const keys = Object.keys(groups);
+  const known = order.filter(d=>groups[d]);
+  const unknown = keys.filter(k=>k!=='__none__' && !order.includes(k)).sort((a,b)=>a.localeCompare(b));
+  const finalOrder = [...known, ...unknown];
+  if(groups['__none__']) finalOrder.push('__none__');
+  return finalOrder.map(d=>({ dept:d, items: groups[d] }));
+}
+
+function renderList(){
+  const q = document.getElementById('searchInput').value.trim().toLowerCase();
+  let list = cases.filter(c=>{
+    if(q && !(c.ptName||'').toLowerCase().includes(q) && !(c.consultant||'').toLowerCase().includes(q)) return false;
+    return true;
+  });
+  list.sort((a,b)=> (b.admission||'').localeCompare(a.admission||''));
+
+  const area = document.getElementById('listArea');
+  if(list.length===0){
+    area.innerHTML = `<div class="empty"><span class="empty-icon">🩺</span>No cases here yet</div>`;
+    return;
+  }
+
+  const groups = groupByDepartment(list);
+  area.innerHTML = groups.map(g=>{
+    const isNone = g.dept === '__none__';
+    const dcol = isNone ? { solid:'var(--t3)' } : colorFor(g.dept);
+    const cards = g.items.map(renderCard).join('');
+    return `<div class="dept-section">
+      <div class="dept-header">
+        <span class="dept-dot" style="background:${dcol.solid};"></span>
+        <h3>${isNone ? 'No Department' : esc(g.dept)}</h3>
+        <span class="dept-count">${g.items.length}</span>
+      </div>
+      <div class="cases-grid">${cards}</div>
+    </div>`;
+  }).join('');
+}
+
+function renderCard(c){
+  const isArchived = !!c.dayOut;
+  const consCol = colorFor(c.consultant);
+  const deptCol = colorFor(c.department);
+  const attachCount = c.attachCount || (c.attachments||[]).length || 0;
+  return `<div class="case-card" style="border-left-color:${consCol.solid};" onclick="openDetail('${c.id}')">
+    <div class="cc-top">
+      <div style="min-width:0;">
+        <div class="cc-name">${esc(c.ptName)}</div>
+        <div class="cc-sub">${[c.age?esc(c.age)+' yrs':'', c.senior?'Senior: '+esc(c.senior):''].filter(Boolean).join(' • ')}</div>
+      </div>
+      <div class="cc-actions" onclick="event.stopPropagation()">
+        <button class="icon-btn" onclick="openDetail('${c.id}')" title="Edit">✏️</button>
+        <button class="icon-btn" onclick="confirmDeleteCase('${c.id}')" title="Delete">🗑️</button>
+      </div>
+    </div>
+    ${c.diagnosis ? `<div class="cc-diag">${esc(c.diagnosis)}</div>` : ''}
+    <div class="cc-tags">
+      <span class="cc-tag"><span class="cc-dot" style="background:${consCol.solid};"></span>${esc(c.consultant)||'—'}</span>
+      ${c.department ? `<span class="cc-tag"><span class="cc-dot" style="background:${deptCol.solid};"></span>${esc(c.department)}</span>` : ''}
+      <span class="status-pill ${isArchived?'':'active'}">${isArchived ? 'Archived' : 'In dept'}</span>
+      ${attachCount ? `<span class="cc-tag">📎 ${attachCount}</span>` : ''}
+    </div>
+    <div class="cc-meta">
+      <span>📅 ${esc(c.admission)||'—'}</span>
+      ${c.dayOut ? `<span>→ 🏁 ${esc(c.dayOut)}</span>` : ''}
+    </div>
+  </div>`;
+}
+
+/* ---------- form ---------- */
+function fillSelect(id, options, selected){
+  const el = document.getElementById(id);
+  el.innerHTML = `<option value="">-- Select --</option>` + options.map(o=>
+    `<option value="${esc(o)}" ${o===selected?'selected':''}>${esc(o)}</option>`
+  ).join('');
+}
+
+function openForm(existing){
+  document.getElementById('formTitle').textContent = existing ? 'Edit Case' : 'New Case';
+  const f = existing || {};
+  fillSelect('f_senior', config.seniors||[], f.senior);
+  fillSelect('f_consultant', config.consultants||[], f.consultant);
+  fillSelect('f_department', config.departments||[], f.department);
+  document.getElementById('f_id').value = f.id || '';
+  document.getElementById('f_ptName').value = f.ptName || '';
+  document.getElementById('f_age').value = f.age || '';
+  document.getElementById('f_admission').value = f.admission || '';
+  document.getElementById('f_dayOut').value = f.dayOut || '';
+  document.getElementById('f_diagnosis').value = f.diagnosis || '';
+  document.getElementById('f_vitality').value = f.vitality || '';
+  document.getElementById('f_feeding').value = f.feeding || '';
+  document.getElementById('f_drain').value = f.drain || '';
+  document.getElementById('f_investigation').value = f.investigation || '';
+  document.getElementById('f_labs').value = f.labs || '';
+  document.getElementById('f_rads').value = f.rads || '';
+  document.getElementById('f_notes').value = f.notes || '';
+  currentAttachments = Array.isArray(f.attachments) ? f.attachments.slice() : [];
+  renderAttachList();
+  document.getElementById('formOverlay').classList.add('active');
+}
+function closeForm(){ document.getElementById('formOverlay').classList.remove('active'); }
+
+async function saveCase(){
+  const ptName = document.getElementById('f_ptName').value.trim();
+  if(!ptName){ showToast('Please enter the patient name'); return; }
+  const id = document.getElementById('f_id').value || (Date.now().toString());
+  const item = {
+    id,
+    ptName,
+    senior: document.getElementById('f_senior').value,
+    consultant: document.getElementById('f_consultant').value,
+    department: document.getElementById('f_department').value,
+    age: document.getElementById('f_age').value.trim(),
+    admission: document.getElementById('f_admission').value,
+    dayOut: document.getElementById('f_dayOut').value,
+    diagnosis: document.getElementById('f_diagnosis').value.trim(),
+    vitality: document.getElementById('f_vitality').value.trim(),
+    feeding: document.getElementById('f_feeding').value.trim(),
+    drain: document.getElementById('f_drain').value.trim(),
+    investigation: document.getElementById('f_investigation').value.trim(),
+    labs: document.getElementById('f_labs').value.trim(),
+    rads: document.getElementById('f_rads').value.trim(),
+    notes: document.getElementById('f_notes').value.trim(),
+    attachments: currentAttachments,
+  };
+  try{
+    const r = await fetch(`${API_CASES}/save`, {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(item)});
+    const res = await r.json();
+    if(res.error) throw new Error(res.error);
+    closeForm();
+    showToast('Saved successfully ✅');
+    await fetchList();
+  }catch(e){
+    console.error('save error:', e);
+    showToast('Error while saving: ' + e.message);
+  }
+}
+
+// Opens a case for viewing/editing. The list only holds lightweight data (no attachments),
+// so the full record -- including attachments -- is fetched on demand, right when it's needed.
+async function openDetail(id){
+  const light = cases.find(x=>String(x.id)===String(id));
+  if(!light) return;
+  openForm(light);
+  if(light.attachCount>0){
+    loadingAttachmentsFor = id;
+    document.getElementById('attachList').innerHTML = '<div class="attach-loading">Loading attachments…</div>';
+    try{
+      const r = await fetch(`${API_CASES}/get?id=${encodeURIComponent(id)}`);
+      const full = await r.json();
+      if(full.error) throw new Error(full.error);
+      if(loadingAttachmentsFor === id && document.getElementById('f_id').value === String(id)){
+        currentAttachments = Array.isArray(full.attachments) ? full.attachments.slice() : [];
+        renderAttachList();
+      }
+    }catch(e){
+      console.error('load attachments error:', e);
+      document.getElementById('attachList').innerHTML = '';
+      showToast('Could not load attachments');
+    }
+  }
+}
+
+async function deleteCase(id){
+  try{
+    const r = await fetch(`${API_CASES}/delete`, {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({id})});
+    const res = await r.json();
+    if(res.error) throw new Error(res.error);
+    showToast('Deleted');
+    await fetchList();
+  }catch(e){
+    console.error('delete error:', e);
+    showToast('Error while deleting: ' + e.message);
+  }
+}
+function confirmDeleteCase(id){
+  if(!confirm('Are you sure you want to delete this case?')) return;
+  requirePassword(()=>deleteCase(id), '🔒 Enter password to delete this case');
+}
+
+/* ---------- attachments ---------- */
+function renderAttachList(){
+  const wrap = document.getElementById('attachList');
+  wrap.innerHTML = currentAttachments.map((a,i)=>{
+    const isImg = (a.type||'').startsWith('image/');
+    const thumb = isImg ? `<div class="attach-thumb"><img src="${a.dataUrl}" alt=""></div>` : `<div class="attach-thumb">📄</div>`;
+    return `<div class="attach-item">
+      <a href="#" class="attach-link" onclick="event.preventDefault();event.stopPropagation();previewAttachment(${i});">${thumb}</a>
+      <div class="attach-name">${esc(a.name)}</div>
+      <button type="button" class="attach-rm" onclick="removeAttachment(${i})" title="Remove">✕</button>
+    </div>`;
+  }).join('');
+}
+
+// Files/photos open right here in the browser (a lightbox) instead of downloading to the device.
+function previewAttachment(i){
+  const a = currentAttachments[i];
+  if(!a) return;
+  const isImg = (a.type||'').startsWith('image/');
+  const content = document.getElementById('lightboxContent');
+  if(isImg){
+    content.innerHTML = `<img src="${a.dataUrl}" alt="${esc(a.name)}">`;
+  }else if((a.type||'')==='application/pdf'){
+    content.innerHTML = `<iframe src="${a.dataUrl}" style="width:85vw;height:85vh;border:none;border-radius:8px;background:#fff;"></iframe>`;
+  }else{
+    content.innerHTML = `<div class="lightbox-file">📄<br><br>${esc(a.name)}<br><br><a href="${a.dataUrl}" target="_blank" rel="noopener">Open in a new tab</a></div>`;
+  }
+  document.getElementById('lightbox').classList.add('active');
+}
+function closeLightbox(){
+  document.getElementById('lightbox').classList.remove('active');
+  document.getElementById('lightboxContent').innerHTML = '';
+}
+
+function handleAttachFiles(fileList){
+  const files = Array.from(fileList || []);
+  files.forEach(file=>{
+    if(file.size > MAX_FILE_MB*1024*1024){
+      showToast(`"${file.name}" is larger than ${MAX_FILE_MB}MB and was skipped`);
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = () => {
+      currentAttachments.push({ name: file.name, type: file.type, size: file.size, dataUrl: reader.result });
+      renderAttachList();
+    };
+    reader.onerror = () => showToast(`Could not read "${file.name}"`);
+    reader.readAsDataURL(file);
+  });
+  document.getElementById('attachInput').value = '';
+}
+function removeAttachment(i){
+  currentAttachments.splice(i,1);
+  renderAttachList();
+}
+
+/* ---------- password modal ---------- */
+let pwCallback = null;
+function requirePassword(cb, title){
+  pwCallback = cb;
+  document.getElementById('pwTitle').textContent = title || '🔒 Password Required';
+  document.getElementById('pwInput').value = '';
+  document.getElementById('pwOverlay').classList.add('active');
+  setTimeout(()=>{ const el = document.getElementById('pwInput'); if(el) el.focus(); }, 50);
+}
+function closePasswordModal(){
+  document.getElementById('pwOverlay').classList.remove('active');
+  pwCallback = null;
+}
+function submitPassword(){
+  const val = document.getElementById('pwInput').value;
+  const correct = config.password || DEFAULT_PASSWORD;
+  if(val === correct){
+    const cb = pwCallback;
+    document.getElementById('pwOverlay').classList.remove('active');
+    pwCallback = null;
+    if(cb) cb();
+  }else{
+    showToast('❌ Incorrect password');
+  }
+}
+
+/* ---------- Settings ---------- */
+function openSettings(){
+  requirePassword(()=>{
+    renderSettingsList('seniors');
+    renderSettingsList('consultants');
+    renderSettingsList('departments');
+    document.getElementById('newPasswordInput').value = '';
+    document.getElementById('settingsOverlay').classList.add('active');
+  }, '🔒 Enter password to access Settings');
+}
+function closeSettings(){ document.getElementById('settingsOverlay').classList.remove('active'); }
+
+function renderSettingsList(key){
+  const wrap = document.getElementById(key+'List');
+  const list = config[key] || [];
+  wrap.innerHTML = list.map((v,i)=>`
+    <div class="settings-row">
+      <input value="${esc(v)}" data-key="${key}" data-idx="${i}">
+      <button class="rm" onclick="removeSettingsRow('${key}', ${i})">✕</button>
+    </div>`).join('');
+}
+
+function addSettingsRow(key){
+  config[key] = config[key] || [];
+  config[key].push('');
+  renderSettingsList(key);
+}
+function removeSettingsRow(key, idx){
+  config[key].splice(idx,1);
+  renderSettingsList(key);
+}
+
+async function saveSettings(){
+  // collect current input values back into config
+  ['seniors','consultants','departments'].forEach(key=>{
+    const inputs = document.querySelectorAll(`#${key}List input`);
+    config[key] = Array.from(inputs).map(i=>i.value.trim()).filter(v=>v);
+  });
+  const newPass = document.getElementById('newPasswordInput').value.trim();
+  try{
+    for(const key of ['seniors','consultants','departments']){
+      const r = await fetch(`${API_CONFIG}/save`, {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({key, value: config[key]})});
+      const res = await r.json();
+      if(res.error) throw new Error(res.error);
+    }
+    if(newPass){
+      const r = await fetch(`${API_CONFIG}/save`, {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({key:'password', value: newPass})});
+      const res = await r.json();
+      if(res.error) throw new Error(res.error);
+      config.password = newPass;
+    }
+    showToast('Settings saved ✅');
+    closeSettings();
+    renderList();
+  }catch(e){
+    console.error('save settings error:', e);
+    showToast('Error saving settings: ' + e.message);
+  }
+}
+
+let toastTimer;
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>t.classList.remove('show'), 2200);
+}
+
+loadCases();
+</script>
+</body>
+</html>
