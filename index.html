@@ -332,8 +332,8 @@ tbody tr:last-child td{border-bottom:none;}
    equivalent of a public API key and relies on Supabase's own Auth checks,
    not secrecy. Replace these two values with your own project's, from
    Supabase Dashboard -> Project Settings -> API. */
-const SUPABASE_URL = 'https://YOUR-PROJECT-REF.supabase.co';
-const SUPABASE_ANON_KEY = 'YOUR-ANON-PUBLIC-KEY';
+const SUPABASE_URL = 'https://suxjvfyraqpcxplpvqzz.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN1eGp2ZnlyYXFwY3hwbHB2cXp6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU0MzY2MDQsImV4cCI6MjEwMTAxMjYwNH0.aogUvupm_G14pLWzIO--RhelPeLtwdMVh1UM1DHC-O4';
 const sbClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 const API_CASES = '/api/cases';
