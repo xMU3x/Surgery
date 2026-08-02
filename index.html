@@ -176,10 +176,11 @@ tbody tr:last-child td{border-bottom:none;}
 .case-card-badges{display:flex;gap:6px;flex-wrap:wrap;margin-top:4px;}
 .case-card-actions{display:flex;gap:5px;flex-shrink:0;flex-wrap:wrap;justify-content:flex-end;}
 .case-card-actions .icon-btn{width:25px;height:25px;font-size:.72rem;}
-.case-card-brief{display:grid;grid-template-columns:1fr 1fr;gap:4px 10px;font-size:.72rem;color:var(--t2);margin-bottom:6px;}
+.case-card-brief{display:flex;justify-content:space-between;align-items:flex-start;gap:20px;font-size:.72rem;color:var(--t2);margin-bottom:6px;}
 .case-card-brief b{color:var(--text);font-weight:700;}
+.case-card-brief-col{display:flex;flex-direction:column;gap:4px;min-width:0;}
+.case-card-roles-col{align-items:flex-end;gap:5px;flex-shrink:0;}
 .case-card-diag{font-size:.74rem;color:var(--text);line-height:1.4;margin:4px 0 6px;background:var(--s2);border-radius:var(--rs);padding:6px 8px;}
-.case-card-roles{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:6px;}
 .role-chip{display:inline-block;font-size:.6rem;font-weight:800;padding:2px 8px;border-radius:20px;white-space:nowrap;line-height:1.6;}
 .role-chip-senior{background:rgba(74,158,255,.12);color:#8fc4ff;}
 .role-chip-consultant{background:rgba(46,204,113,.12);color:#87e0ab;}
@@ -779,13 +780,8 @@ function renderList(){
       <div class="case-card-top">
         ${checkboxHtml}
         <div style="flex:1;min-width:0;">
-          <div class="case-card-name">${esc(c.ptName)} ${isArchived?`<span class="pill pill-archived">Discharged ${esc(c.dayOut)}</span>`:`<span class="pill">In dept</span>`}</div>
+          <div class="case-card-name">${esc(c.ptName)} ${isArchived?`<span class="pill pill-archived">Discharged ${esc(c.dayOut)}</span>`:''}</div>
           <div class="case-card-diag">${c.diagnosis ? wrapWords(c.diagnosis, 14) : '-'}</div>
-          <div class="case-card-roles">
-            <span class="role-chip role-chip-senior">${esc(c.senior)||'-'}</span>
-            <span class="role-chip role-chip-consultant">${esc(c.consultant)||'-'}</span>
-            <span class="role-chip role-chip-department">${esc(c.department)||'-'}</span>
-          </div>
         </div>
         <div class="case-card-actions">
           <button class="icon-btn" onclick="event.stopPropagation();openDetail('${c.id}')" title="Edit">✏️</button>
@@ -794,9 +790,16 @@ function renderList(){
         </div>
       </div>
       <div class="case-card-brief">
-        <div><b>Age:</b> ${esc(c.age)||'-'}</div>
-        <div><b>Admission:</b> ${c.admission ? formatDateWithDay(c.admission) : '-'}</div>
-        <div><b>Day out:</b> ${esc(c.dayOut)||'-'}</div>
+        <div class="case-card-brief-col">
+          <div><b>Age:</b> ${esc(c.age)||'-'}</div>
+          <div><b>Admission:</b> ${c.admission ? formatDateWithDay(c.admission) : '-'}</div>
+          <div><b>Day out:</b> ${esc(c.dayOut)||'-'}</div>
+        </div>
+        <div class="case-card-brief-col case-card-roles-col">
+          <span class="role-chip role-chip-senior">${esc(c.senior)||'-'}</span>
+          <span class="role-chip role-chip-consultant">${esc(c.consultant)||'-'}</span>
+          <span class="role-chip role-chip-department">${esc(c.department)||'-'}</span>
+        </div>
       </div>
       ${vitalsHtml ? `<div class="case-card-vitals">${vitalsHtml}</div>` : ''}
       <div class="case-card-toggle">${isOpen? '▲ Hide full details' : '▼ Show full details'}</div>
