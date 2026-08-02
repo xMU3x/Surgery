@@ -153,6 +153,65 @@ tbody tr:last-child td{border-bottom:none;}
 .doctor-toggle{background:var(--s3);border:1px solid var(--border2);color:var(--text);border-radius:8px;padding:6px 12px;font-family:inherit;font-weight:700;font-size:.76rem;cursor:pointer;white-space:nowrap;flex-shrink:0;}
 .doctor-toggle.enable{color:var(--green);}
 .doctor-toggle.disable{color:var(--red);}
+.doctor-actions{display:flex;gap:6px;flex-shrink:0;}
+.doctor-mini-btn{background:var(--s3);border:1px solid var(--border2);color:var(--text);border-radius:8px;width:30px;height:30px;font-size:.8rem;cursor:pointer;flex-shrink:0;}
+.doctor-mini-btn:hover{border-color:var(--teal);}
+.doctor-mini-btn.danger{color:var(--red);}
+
+/* ---- Bulk selection bar (admin only) ---- */
+.bulkbar{display:none;align-items:center;gap:10px;background:var(--teal-dim);border:1px solid rgba(31,182,166,.35);border-radius:var(--rs);padding:10px 14px;margin-bottom:14px;flex-wrap:wrap;}
+.bulkbar.active{display:flex;}
+.bulkbar .count{font-weight:800;color:var(--teal);font-size:.85rem;}
+.bulkbar .spacer{flex:1;}
+.select-all-row{display:flex;align-items:center;gap:8px;margin-bottom:10px;color:var(--t2);font-size:.8rem;font-weight:700;}
+.case-check{width:18px;height:18px;accent-color:var(--teal);cursor:pointer;flex-shrink:0;}
+
+/* ---- Interactive case cards (main interface) ---- */
+.cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:14px;}
+.case-card{background:var(--s1);border:1px solid var(--border);border-radius:var(--r);padding:14px 16px;transition:.15s;cursor:pointer;position:relative;}
+.case-card:hover{border-color:var(--teal);box-shadow:0 4px 18px rgba(0,0,0,.25);transform:translateY(-1px);}
+.case-card-top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:10px;}
+.case-card-select{margin-top:2px;}
+.case-card-name{font-weight:800;font-size:1rem;color:var(--text);}
+.case-card-badges{display:flex;gap:6px;flex-wrap:wrap;margin-top:4px;}
+.case-card-actions{display:flex;gap:6px;flex-shrink:0;}
+.case-card-brief{display:grid;grid-template-columns:1fr 1fr;gap:6px 12px;font-size:.78rem;color:var(--t2);margin-bottom:8px;}
+.case-card-brief b{color:var(--text);font-weight:700;}
+.case-card-diag{font-size:.8rem;color:var(--text);line-height:1.5;margin-bottom:10px;background:var(--s2);border-radius:var(--rs);padding:8px 10px;}
+.case-card-vitals{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;}
+.vital-chip{display:inline-flex;align-items:center;gap:4px;font-size:.7rem;font-weight:800;padding:3px 9px;border-radius:50px;background:var(--blue-dim);color:var(--blue);white-space:nowrap;}
+.case-card-toggle{display:flex;align-items:center;justify-content:center;gap:6px;font-size:.74rem;font-weight:700;color:var(--teal);padding:6px 0;border-top:1px dashed var(--border2);}
+.case-card-details{display:none;grid-template-columns:1fr 1fr;gap:8px 14px;margin-top:10px;padding-top:10px;border-top:1px solid var(--border);font-size:.78rem;}
+.case-card-details.open{display:grid;}
+.case-card-details .cd-item{min-width:0;}
+.case-card-details .cd-item span.k{display:block;color:var(--teal);font-weight:800;font-size:.68rem;text-transform:uppercase;letter-spacing:.02em;margin-bottom:3px;}
+.case-card-details .cd-item span.v{color:var(--text);white-space:pre-wrap;word-break:break-word;}
+.case-card-details .cd-full{grid-column:1/-1;}
+
+/* ---- Notes / Requests task cards (shown above the case list) ---- */
+.tasks-wrap{margin-bottom:20px;}
+.tasks-hdr{font-size:.78rem;font-weight:800;color:var(--t2);margin-bottom:10px;text-transform:uppercase;letter-spacing:.03em;}
+.tasks-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px;}
+.task-card{background:var(--s1);border:1px solid var(--border2);border-left:3px solid var(--amber);border-radius:var(--rs);padding:10px 13px;}
+.task-card.done{border-left-color:var(--green);}
+.task-card.unavailable{border-left-color:var(--red);}
+.task-card-pt{font-weight:800;font-size:.82rem;margin-bottom:2px;}
+.task-card-text{font-size:.8rem;color:var(--text);margin-bottom:8px;line-height:1.4;}
+.task-status-row{display:flex;gap:6px;flex-wrap:wrap;}
+.task-status-btn{flex:1;background:var(--s3);border:1px solid var(--border2);color:var(--t2);border-radius:7px;padding:5px 6px;font-family:inherit;font-size:.68rem;font-weight:800;cursor:pointer;white-space:nowrap;}
+.task-status-btn.active-done{background:var(--green-dim);color:var(--green);border-color:rgba(46,204,113,.35);}
+.task-status-btn.active-pending{background:var(--amber-dim);color:var(--amber);border-color:rgba(245,166,35,.35);}
+.task-status-btn.active-unavailable{background:var(--red-dim);color:var(--red);border-color:rgba(231,76,60,.35);}
+
+/* ---- Vitality sub-fields & Notes/Requests rows in the form ---- */
+.vital-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:14px;}
+@media(max-width:640px){.vital-grid{grid-template-columns:1fr 1fr;}}
+.vital-grid .field{margin-bottom:0;}
+.request-row{display:flex;gap:8px;align-items:center;background:var(--s2);border:1px solid var(--border);border-radius:var(--rs);padding:8px 10px;margin-bottom:8px;flex-wrap:wrap;}
+.request-row input[type=text]{flex:1;min-width:140px;background:transparent;border:none;color:var(--text);font-family:inherit;font-size:.85rem;}
+.request-row input[type=text]:focus{outline:none;}
+.request-row select{background:var(--s3);border:1px solid var(--border2);color:var(--text);border-radius:7px;padding:6px 8px;font-family:inherit;font-size:.76rem;}
+.request-row .rm{background:var(--red-dim);color:var(--red);border:none;border-radius:6px;width:26px;height:26px;cursor:pointer;flex-shrink:0;}
 </style>
 </head>
 <body>
@@ -183,7 +242,7 @@ tbody tr:last-child td{border-bottom:none;}
   <div class="hdr-actions">
     <span class="user-chip" id="userChip"></span>
     <button class="btn" id="installBtn" style="display:none" onclick="promptInstall()">📲 Install</button>
-    <button class="btn" onclick="openSettings()">⚙️ Settings</button>
+    <button class="btn" id="settingsBtn" style="display:none" onclick="openSettings()">⚙️ Settings</button>
     <button class="btn btn-primary" onclick="openForm()">＋ New Case</button>
   </div>
 </div>
@@ -196,6 +255,26 @@ tbody tr:last-child td{border-bottom:none;}
 
   <div class="toolbar">
     <div class="searchbar"><input type="text" id="searchInput" placeholder="🔍 Search by name, senior, or consultant..." oninput="renderList()"></div>
+  </div>
+
+  <!-- Bulk select bar: Admin-only feature to select multiple cases and
+       edit/delete them together. Hidden entirely for non-admin doctors. -->
+  <div class="select-all-row" id="selectAllRow" style="display:none">
+    <input type="checkbox" class="case-check" id="selectAllCheckbox" onchange="toggleSelectAll(this.checked)">
+    <span>Select all</span>
+  </div>
+  <div class="bulkbar" id="bulkBar">
+    <span class="count" id="bulkCount">0 selected</span>
+    <div class="spacer"></div>
+    <button class="btn" onclick="openBulkEdit()">✏️ Bulk Edit</button>
+    <button class="btn btn-danger" onclick="confirmBulkDelete()">🗑️ Delete Selected</button>
+    <button class="btn" onclick="clearSelection()">✕ Clear</button>
+  </div>
+
+  <!-- Notes/Requests shown as tasks, above the case list -->
+  <div class="tasks-wrap" id="tasksWrap" style="display:none">
+    <div class="tasks-hdr">📋 Open Requests</div>
+    <div class="tasks-grid" id="tasksArea"></div>
   </div>
 
   <div id="listArea"><div class="loading">Loading...</div></div>
@@ -225,11 +304,21 @@ tbody tr:last-child td{border-bottom:none;}
       <div class="field"><label>Diagnosis</label><textarea id="f_diagnosis" placeholder="Diagnosis"></textarea></div>
 
       <div class="subhdr">Clinical Status</div>
-      <div class="grid2">
-        <div class="field"><label>Vitality</label><input id="f_vitality" placeholder="BP / PR / Temp / RR / SpO2"></div>
-        <div class="field"><label>Feeding</label><input id="f_feeding" placeholder="NPO / Oral / NG tube..."></div>
+      <div class="field">
+        <label>Vitality</label>
+        <div class="hint">Fill in only what applies — each one only shows on the main screen if it has data, and they're all grouped together under the Vitality column.</div>
+        <div class="vital-grid">
+          <input id="f_vital_bp" placeholder="BP (e.g. 120/80)">
+          <input id="f_vital_pr" placeholder="PR (e.g. 78 bpm)">
+          <input id="f_vital_temp" placeholder="Temp (e.g. 37.1°C)">
+          <input id="f_vital_rr" placeholder="RR (e.g. 16/min)">
+          <input id="f_vital_spo2" placeholder="SpO2 (e.g. 98%)">
+        </div>
       </div>
-      <div class="field"><label>Drain</label><input id="f_drain" placeholder="Drain type & amount"></div>
+      <div class="grid2">
+        <div class="field"><label>Feeding</label><input id="f_feeding" placeholder="NPO / Oral / NG tube..."></div>
+        <div class="field"><label>Drain</label><input id="f_drain" placeholder="Drain type & amount"></div>
+      </div>
 
       <div class="subhdr">Investigation</div>
       <div class="field"><label>Investigation</label><textarea id="f_investigation" placeholder="General investigation notes"></textarea></div>
@@ -239,6 +328,11 @@ tbody tr:last-child td{border-bottom:none;}
       </div>
 
       <div class="field"><label>Notes</label><textarea id="f_notes" placeholder="Additional notes"></textarea></div>
+
+      <div class="subhdr">Notes / Requests</div>
+      <div class="hint">Add things that need to be done for this case throughout the day. These show as task cards above the case list on the main screen, each with a status button.</div>
+      <div id="requestsList"></div>
+      <button type="button" class="add-row-btn" onclick="addRequestRow()">＋ Add request</button>
 
       <button class="btn btn-primary" style="width:100%;justify-content:center;padding:13px;margin-top:16px;" onclick="saveCase()">💾 Save Case</button>
     </div>
@@ -322,6 +416,44 @@ tbody tr:last-child td{border-bottom:none;}
   </div>
 </div>
 
+<!-- Bulk Edit Sheet (Admin only) -->
+<div class="overlay" id="bulkEditOverlay">
+  <div class="sheet">
+    <div class="sheet-hdr">
+      <h2 id="bulkEditTitle">Bulk Edit</h2>
+      <button class="close-btn" onclick="closeBulkEdit()">✕</button>
+    </div>
+    <div class="sheet-body">
+      <div class="hint">Only the fields you fill in below will be applied to every selected case. Leave a field empty/unselected to keep each case's existing value.</div>
+      <div class="field"><label><input type="checkbox" id="be_senior_on"> Senior</label><select id="be_senior" disabled></select></div>
+      <div class="field"><label><input type="checkbox" id="be_consultant_on"> Consultant</label><select id="be_consultant" disabled></select></div>
+      <div class="field"><label><input type="checkbox" id="be_department_on"> Department</label><select id="be_department" disabled></select></div>
+      <div class="field"><label><input type="checkbox" id="be_dayOut_on"> Day out</label><input id="be_dayOut" type="date" disabled></div>
+      <button class="btn btn-primary" style="width:100%;justify-content:center;padding:13px;margin-top:16px;" onclick="applyBulkEdit()">💾 Apply to Selected</button>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Doctor Sheet (Admin only) -->
+<div class="overlay" id="editDoctorOverlay">
+  <div class="sheet pw-sheet">
+    <div class="sheet-hdr">
+      <h2>Edit Doctor Account</h2>
+      <button class="close-btn" onclick="closeEditDoctor()">✕</button>
+    </div>
+    <div class="sheet-body">
+      <input type="hidden" id="ed_id">
+      <div class="field"><label>Full name</label><input id="ed_name" placeholder="Dr. Full Name"></div>
+      <div class="field"><label>Email</label><input id="ed_email" type="email" placeholder="doctor@example.com"></div>
+      <div class="field"><label>Role</label>
+        <select id="ed_role"><option value="doctor">Doctor</option><option value="admin">Admin</option></select>
+      </div>
+      <div class="field"><label>New password (optional)</label><input id="ed_password" type="password" placeholder="Leave blank to keep current password"></div>
+      <button class="btn btn-primary" style="width:100%;justify-content:center;padding:13px;margin-top:6px;" onclick="saveEditDoctor()">💾 Save Changes</button>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 </div><!-- /#appRoot -->
@@ -345,6 +477,9 @@ let currentTab = 'active';
 let deferredInstallPrompt = null;
 let currentSession = null;
 let doctorsCache = [];
+let selectedCaseIds = new Set(); // Admin-only bulk selection
+let expandedCaseIds = new Set(); // Which case cards have their details expanded
+let requestRowSeq = 0;
 
 function esc(s){
   return String(s??'').replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
@@ -451,6 +586,14 @@ async function loadConfig(){
   }
   renderUserChip();
   updateInstallButtonVisibility();
+  // Settings, and the multi-select bulk-actions option, are Admin-only —
+  // fully hidden (not just password-gated) for every other doctor.
+  document.getElementById('settingsBtn').style.display = config.isAdmin ? 'flex' : 'none';
+  document.getElementById('selectAllRow').style.display = config.isAdmin ? 'flex' : 'none';
+  if(!config.isAdmin){
+    selectedCaseIds.clear();
+    document.getElementById('bulkBar').classList.remove('active');
+  }
 }
 
 async function loadCases(){
@@ -515,6 +658,47 @@ function byCell(c){
   return created + edited;
 }
 
+/* ---------- Vitality: multiple sub-fields grouped into one column ---------- */
+// Normalizes whatever is stored (new object shape, or a legacy plain string
+// from before this feature existed) into a consistent { bp, pr, temp, rr, spo2 } shape.
+const VITAL_KEYS = [
+  { key:'bp',   label:'BP' },
+  { key:'pr',   label:'PR' },
+  { key:'temp', label:'Temp' },
+  { key:'rr',   label:'RR' },
+  { key:'spo2', label:'SpO2' },
+];
+function normalizeVitality(v){
+  if(v && typeof v === 'object') return v;
+  if(typeof v === 'string' && v.trim()) return { bp:'', pr:'', temp:'', rr:'', spo2:'', legacy: v.trim() };
+  return {};
+}
+// Only sub-fields that actually have data are shown, grouped as chips.
+function renderVitalityChips(v){
+  const vit = normalizeVitality(v);
+  const chips = VITAL_KEYS
+    .filter(k=>vit[k.key] && String(vit[k.key]).trim())
+    .map(k=>`<span class="vital-chip">${k.label}: ${esc(vit[k.key])}</span>`);
+  if(vit.legacy) chips.push(`<span class="vital-chip">${esc(vit.legacy)}</span>`);
+  return chips.join('');
+}
+function vitalityIsEmpty(v){
+  const vit = normalizeVitality(v);
+  return !VITAL_KEYS.some(k=>vit[k.key] && String(vit[k.key]).trim()) && !vit.legacy;
+}
+
+/* ---------- Notes / Requests: task-style items with a status ---------- */
+// status is one of: 'Pending', 'Done', 'Not Available'
+function normalizeRequests(list){
+  return Array.isArray(list) ? list.filter(r=>r && r.text && r.text.trim()) : [];
+}
+function requestStatusClass(status){
+  if(status === 'Done') return 'active-done';
+  if(status === 'Not Available') return 'active-unavailable';
+  return 'active-pending';
+}
+
+/* ---------- simple card grid rendering (rows -> interactive cards) ---------- */
 function renderList(){
   const q = document.getElementById('searchInput').value.trim().toLowerCase();
   let list = cases.filter(c=>{
@@ -533,49 +717,210 @@ function renderList(){
     return (a.admission||'').localeCompare(b.admission||'');
   });
 
+  renderTasks();
+
   const area = document.getElementById('listArea');
   if(list.length===0){
     area.innerHTML = `<div class="empty"><span class="empty-icon">🩺</span>No cases here yet</div>`;
+    updateBulkBar();
     return;
   }
 
-  const rows = list.map(c=>{
+  const cards = list.map(c=>{
     const isArchived = !!c.dayOut;
-    return `<tr onclick="openDetail('${c.id}')">
-      <td class="nowrap pt-name">${esc(c.ptName)}</td>
-      <td class="nowrap"><span class="role-badge">${esc(c.senior)||'-'}</span></td>
-      <td class="nowrap"><span class="role-badge">${esc(c.consultant)||'-'}</span></td>
-      <td class="nowrap"><span class="role-badge">${esc(c.department)||'-'}</span></td>
-      <td class="nowrap">${esc(c.age)||'-'}</td>
-      <td class="diag-col diag-cell">${wrapWords(c.diagnosis, 10)}</td>
-      <td class="nowrap">${esc(c.admission)||'-'}</td>
-      <td class="wrap-cell">${esc(c.vitality)||'-'}</td>
-      <td class="wrap-cell">${esc(c.feeding)||'-'}</td>
-      <td class="wrap-cell">${esc(c.drain)||'-'}</td>
-      <td class="wrap-cell">${esc(c.investigation)||'-'}</td>
-      <td class="nowrap">${esc(c.dayOut)||(isArchived?'-':'<span class="pill">In dept</span>')}</td>
-      <td class="wrap-cell">${esc(c.labs)||'-'}</td>
-      <td class="wrap-cell">${esc(c.rads)||'-'}</td>
-      <td class="wrap-cell">${esc(c.notes)||'-'}</td>
-      <td class="by-col by-cell">${byCell(c)}</td>
-      <td class="nowrap"><div class="rowactions">
-        <button class="icon-btn" onclick="event.stopPropagation();openDetail('${c.id}')" title="Edit">✏️</button>
-        <button class="icon-btn" onclick="event.stopPropagation();confirmDeleteCase('${c.id}')" title="Delete">🗑️</button>
-      </div></td>
-    </tr>`;
+    const isOpen = expandedCaseIds.has(String(c.id));
+    const isChecked = selectedCaseIds.has(String(c.id));
+    const vitalsHtml = renderVitalityChips(c.vitality);
+    const checkboxHtml = config.isAdmin
+      ? `<input type="checkbox" class="case-check case-card-select" onclick="event.stopPropagation();toggleCaseSelection('${c.id}', this.checked)" ${isChecked?'checked':''}>`
+      : '';
+    const deleteBtnHtml = config.isAdmin
+      ? `<button class="icon-btn" onclick="event.stopPropagation();confirmDeleteCase('${c.id}')" title="Delete">🗑️</button>`
+      : '';
+    return `<div class="case-card" onclick="toggleCardDetails('${c.id}')">
+      <div class="case-card-top">
+        ${checkboxHtml}
+        <div style="flex:1;min-width:0;">
+          <div class="case-card-name">${esc(c.ptName)}</div>
+          <div class="case-card-badges">
+            <span class="role-badge">${esc(c.senior)||'-'}</span>
+            <span class="role-badge">${esc(c.department)||'-'}</span>
+            ${isArchived?`<span class="pill pill-archived">Discharged ${esc(c.dayOut)}</span>`:`<span class="pill">In dept</span>`}
+          </div>
+        </div>
+        <div class="case-card-actions">
+          <button class="icon-btn" onclick="event.stopPropagation();openDetail('${c.id}')" title="Edit">✏️</button>
+          ${deleteBtnHtml}
+        </div>
+      </div>
+      <div class="case-card-brief">
+        <div><b>Consultant:</b> ${esc(c.consultant)||'-'}</div>
+        <div><b>Age:</b> ${esc(c.age)||'-'}</div>
+        <div><b>Admission:</b> ${esc(c.admission)||'-'}</div>
+        <div><b>Day out:</b> ${esc(c.dayOut)||'-'}</div>
+      </div>
+      ${c.diagnosis ? `<div class="case-card-diag">${wrapWords(c.diagnosis, 14)}</div>` : ''}
+      ${vitalsHtml ? `<div class="case-card-vitals">${vitalsHtml}</div>` : ''}
+      <div class="case-card-toggle">${isOpen? '▲ Hide full details' : '▼ Show full details'}</div>
+      <div class="case-card-details ${isOpen?'open':''}">
+        <div class="cd-item"><span class="k">Feeding</span><span class="v">${esc(c.feeding)||'-'}</span></div>
+        <div class="cd-item"><span class="k">Drain</span><span class="v">${esc(c.drain)||'-'}</span></div>
+        <div class="cd-item cd-full"><span class="k">Investigation</span><span class="v">${esc(c.investigation)||'-'}</span></div>
+        <div class="cd-item"><span class="k">Labs</span><span class="v">${esc(c.labs)||'-'}</span></div>
+        <div class="cd-item"><span class="k">Rads</span><span class="v">${esc(c.rads)||'-'}</span></div>
+        <div class="cd-item cd-full"><span class="k">Notes</span><span class="v">${esc(c.notes)||'-'}</span></div>
+        <div class="cd-item cd-full"><span class="k">Registered / Edited by</span><span class="v">${byCell(c)}</span></div>
+      </div>
+    </div>`;
   }).join('');
 
-  area.innerHTML = `
-  <div class="table-scroll">
-  <table>
-    <thead><tr>
-      <th>Pt. Name</th><th>Senior</th><th>Consultant</th><th>Department</th><th>Age</th><th class="diag-col">Diagnosis</th>
-      <th>Day / Admission</th><th>Vitality</th><th>Feeding</th><th>Drain</th><th>Investigation</th>
-      <th>Day out</th><th>Labs</th><th>Rads</th><th>Notes</th><th class="by-col">Registered / Edited by</th><th></th>
-    </tr></thead>
-    <tbody>${rows}</tbody>
-  </table>
-  </div>`;
+  area.innerHTML = `<div class="cards-grid">${cards}</div>`;
+  updateBulkBar();
+}
+
+// Expands/collapses a case card's full-detail section in place, without
+// opening the edit form — click on checkboxes/buttons inside the card is
+// stopped from propagating so it doesn't toggle the card by accident.
+function toggleCardDetails(id){
+  const key = String(id);
+  if(expandedCaseIds.has(key)) expandedCaseIds.delete(key);
+  else expandedCaseIds.add(key);
+  renderList();
+}
+
+/* ---------- Notes/Requests task cards, shown above the case list ---------- */
+function renderTasks(){
+  const wrap = document.getElementById('tasksWrap');
+  const area = document.getElementById('tasksArea');
+  const withRequests = cases.filter(c=>normalizeRequests(c.requests).length);
+  if(!withRequests.length){ wrap.style.display = 'none'; area.innerHTML = ''; return; }
+  wrap.style.display = 'block';
+  area.innerHTML = withRequests.flatMap(c=>{
+    return normalizeRequests(c.requests).map(req=>{
+      const cls = req.status === 'Done' ? 'done' : (req.status === 'Not Available' ? 'unavailable' : '');
+      return `<div class="task-card ${cls}">
+        <div class="task-card-pt">${esc(c.ptName)}</div>
+        <div class="task-card-text">${esc(req.text)}</div>
+        <div class="task-status-row">
+          <button class="task-status-btn ${req.status==='Done'?'active-done':''}" onclick="updateRequestStatus('${c.id}','${req.id}','Done')">Done</button>
+          <button class="task-status-btn ${(!req.status||req.status==='Pending')?'active-pending':''}" onclick="updateRequestStatus('${c.id}','${req.id}','Pending')">Pending</button>
+          <button class="task-status-btn ${req.status==='Not Available'?'active-unavailable':''}" onclick="updateRequestStatus('${c.id}','${req.id}','Not Available')">Not Available</button>
+        </div>
+      </div>`;
+    });
+  }).join('');
+}
+
+async function updateRequestStatus(caseId, reqId, status){
+  const c = cases.find(x=>String(x.id)===String(caseId));
+  if(!c) return;
+  const reqs = normalizeRequests(c.requests).map(r=> r.id===reqId ? {...r, status} : r);
+  const item = { ...c, requests: reqs };
+  try{
+    const r = await authedFetch(`${API_CASES}/save`, {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(item)});
+    const res = await r.json();
+    if(res.error) throw new Error(res.error);
+    c.requests = reqs;
+    renderTasks();
+  }catch(e){
+    console.error('update-request-status error:', e);
+    showToast('Error updating request: ' + e.message);
+  }
+}
+
+/* ---------- Bulk selection (Admin only) ---------- */
+function toggleCaseSelection(id, checked){
+  const key = String(id);
+  if(checked) selectedCaseIds.add(key); else selectedCaseIds.delete(key);
+  updateBulkBar();
+}
+function toggleSelectAll(checked){
+  selectedCaseIds.clear();
+  if(checked) cases.forEach(c=>selectedCaseIds.add(String(c.id)));
+  renderList();
+}
+function clearSelection(){
+  selectedCaseIds.clear();
+  document.getElementById('selectAllCheckbox').checked = false;
+  renderList();
+}
+function updateBulkBar(){
+  const bar = document.getElementById('bulkBar');
+  const n = selectedCaseIds.size;
+  if(config.isAdmin && n > 0){
+    bar.classList.add('active');
+    document.getElementById('bulkCount').textContent = n + ' selected';
+  }else{
+    bar.classList.remove('active');
+  }
+}
+
+function confirmBulkDelete(){
+  const n = selectedCaseIds.size;
+  if(!n) return;
+  if(!confirm(`Are you sure you want to delete ${n} selected case(s)?`)) return;
+  requirePassword(()=>bulkDeleteSelected(), '🔒 Enter password to delete selected cases');
+}
+async function bulkDeleteSelected(){
+  const ids = Array.from(selectedCaseIds);
+  try{
+    const r = await authedFetch(`${API_CASES}/delete`, {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ids})});
+    const res = await r.json();
+    if(res.error) throw new Error(res.error);
+    showToast(`Deleted ${ids.length} case(s)`);
+    selectedCaseIds.clear();
+    await fetchList();
+  }catch(e){
+    console.error('bulk-delete error:', e);
+    showToast('Error while deleting: ' + e.message);
+  }
+}
+
+function openBulkEdit(){
+  if(!selectedCaseIds.size){ showToast('Select at least one case first'); return; }
+  fillSelect('be_senior', config.seniors||[]);
+  fillSelect('be_consultant', config.consultants||[]);
+  fillSelect('be_department', config.departments||[]);
+  ['senior','consultant','department','dayOut'].forEach(f=>{
+    document.getElementById('be_'+f+'_on').checked = false;
+    document.getElementById('be_'+f).disabled = true;
+  });
+  document.getElementById('be_dayOut').value = '';
+  document.getElementById('bulkEditTitle').textContent = `Bulk Edit (${selectedCaseIds.size} selected)`;
+  document.getElementById('bulkEditOverlay').classList.add('active');
+}
+function closeBulkEdit(){ document.getElementById('bulkEditOverlay').classList.remove('active'); }
+document.addEventListener('change', (e)=>{
+  if(e.target && e.target.id && e.target.id.startsWith('be_') && e.target.id.endsWith('_on')){
+    const field = e.target.id.replace(/^be_/, '').replace(/_on$/, '');
+    document.getElementById('be_'+field).disabled = !e.target.checked;
+  }
+});
+async function applyBulkEdit(){
+  const changes = {};
+  if(document.getElementById('be_senior_on').checked) changes.senior = document.getElementById('be_senior').value;
+  if(document.getElementById('be_consultant_on').checked) changes.consultant = document.getElementById('be_consultant').value;
+  if(document.getElementById('be_department_on').checked) changes.department = document.getElementById('be_department').value;
+  if(document.getElementById('be_dayOut_on').checked) changes.dayOut = document.getElementById('be_dayOut').value;
+  if(!Object.keys(changes).length){ showToast('Choose at least one field to change'); return; }
+  const ids = Array.from(selectedCaseIds);
+  try{
+    for(const id of ids){
+      const c = cases.find(x=>String(x.id)===String(id));
+      if(!c) continue;
+      const item = { ...c, ...changes };
+      const r = await authedFetch(`${API_CASES}/save`, {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(item)});
+      const res = await r.json();
+      if(res.error) throw new Error(res.error);
+    }
+    showToast(`Updated ${ids.length} case(s) ✅`);
+    closeBulkEdit();
+    selectedCaseIds.clear();
+    await fetchList();
+  }catch(e){
+    console.error('bulk-edit error:', e);
+    showToast('Error while bulk editing: ' + e.message);
+  }
 }
 
 /* ---------- form ---------- */
@@ -598,13 +943,19 @@ function openForm(existing){
   document.getElementById('f_admission').value = f.admission || '';
   document.getElementById('f_dayOut').value = f.dayOut || '';
   document.getElementById('f_diagnosis').value = f.diagnosis || '';
-  document.getElementById('f_vitality').value = f.vitality || '';
+  const vit = normalizeVitality(f.vitality);
+  document.getElementById('f_vital_bp').value = vit.bp || vit.legacy || '';
+  document.getElementById('f_vital_pr').value = vit.pr || '';
+  document.getElementById('f_vital_temp').value = vit.temp || '';
+  document.getElementById('f_vital_rr').value = vit.rr || '';
+  document.getElementById('f_vital_spo2').value = vit.spo2 || '';
   document.getElementById('f_feeding').value = f.feeding || '';
   document.getElementById('f_drain').value = f.drain || '';
   document.getElementById('f_investigation').value = f.investigation || '';
   document.getElementById('f_labs').value = f.labs || '';
   document.getElementById('f_rads').value = f.rads || '';
   document.getElementById('f_notes').value = f.notes || '';
+  renderRequestRows(normalizeRequests(f.requests));
   const trailBox = document.getElementById('f_trailBox');
   if(f.createdByName){
     let html = `🖊️ Registered by <b>${esc(f.createdByName)}</b>${f.createdAt?(' on '+formatDateShort(f.createdAt)):''}`;
@@ -620,10 +971,58 @@ function openForm(existing){
 }
 function closeForm(){ document.getElementById('formOverlay').classList.remove('active'); }
 
+/* ---------- Notes/Requests rows inside the Add/Edit form ---------- */
+function renderRequestRows(list){
+  const wrap = document.getElementById('requestsList');
+  wrap.innerHTML = (list||[]).map(r=>{
+    const rid = r.id || ('req'+(++requestRowSeq));
+    const status = r.status || 'Pending';
+    return `<div class="request-row" data-rid="${esc(rid)}">
+      <input type="text" value="${esc(r.text||'')}" placeholder="e.g. Repeat CBC this afternoon">
+      <select>
+        <option value="Pending" ${status==='Pending'?'selected':''}>Pending</option>
+        <option value="Done" ${status==='Done'?'selected':''}>Done</option>
+        <option value="Not Available" ${status==='Not Available'?'selected':''}>Not Available</option>
+      </select>
+      <button type="button" class="rm" onclick="this.closest('.request-row').remove()">✕</button>
+    </div>`;
+  }).join('');
+}
+function addRequestRow(){
+  const wrap = document.getElementById('requestsList');
+  const rid = 'req'+(++requestRowSeq);
+  const row = document.createElement('div');
+  row.className = 'request-row';
+  row.dataset.rid = rid;
+  row.innerHTML = `
+      <input type="text" placeholder="e.g. Repeat CBC this afternoon">
+      <select>
+        <option value="Pending" selected>Pending</option>
+        <option value="Done">Done</option>
+        <option value="Not Available">Not Available</option>
+      </select>
+      <button type="button" class="rm" onclick="this.closest('.request-row').remove()">✕</button>`;
+  wrap.appendChild(row);
+}
+function collectRequestsFromForm(){
+  return Array.from(document.querySelectorAll('#requestsList .request-row')).map(row=>{
+    const text = row.querySelector('input[type=text]').value.trim();
+    const status = row.querySelector('select').value;
+    return text ? { id: row.dataset.rid, text, status } : null;
+  }).filter(Boolean);
+}
+
 async function saveCase(){
   const ptName = document.getElementById('f_ptName').value.trim();
   if(!ptName){ showToast('Please enter the patient name'); return; }
   const id = document.getElementById('f_id').value || (Date.now().toString());
+  const vitality = {
+    bp: document.getElementById('f_vital_bp').value.trim(),
+    pr: document.getElementById('f_vital_pr').value.trim(),
+    temp: document.getElementById('f_vital_temp').value.trim(),
+    rr: document.getElementById('f_vital_rr').value.trim(),
+    spo2: document.getElementById('f_vital_spo2').value.trim(),
+  };
   const item = {
     id,
     ptName,
@@ -634,13 +1033,14 @@ async function saveCase(){
     admission: document.getElementById('f_admission').value,
     dayOut: document.getElementById('f_dayOut').value,
     diagnosis: document.getElementById('f_diagnosis').value.trim(),
-    vitality: document.getElementById('f_vitality').value.trim(),
+    vitality,
     feeding: document.getElementById('f_feeding').value.trim(),
     drain: document.getElementById('f_drain').value.trim(),
     investigation: document.getElementById('f_investigation').value.trim(),
     labs: document.getElementById('f_labs').value.trim(),
     rads: document.getElementById('f_rads').value.trim(),
     notes: document.getElementById('f_notes').value.trim(),
+    requests: collectRequestsFromForm(),
   };
   try{
     const r = await authedFetch(`${API_CASES}/save`, {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(item)});
@@ -822,7 +1222,7 @@ async function exportToExcel(){
       'Age': c.age || '',
       'Diagnosis': c.diagnosis || '',
       'Admission Date': c.admission || '',
-      'Vitality': c.vitality || '',
+      'Vitality': (()=>{ const v = normalizeVitality(c.vitality); return VITAL_KEYS.filter(k=>v[k.key]).map(k=>`${k.label}: ${v[k.key]}`).join(' | ') || v.legacy || ''; })(),
       'Feeding': c.feeding || '',
       'Drain': c.drain || '',
       'Investigation': c.investigation || '',
@@ -830,6 +1230,7 @@ async function exportToExcel(){
       'Labs': c.labs || '',
       'Rads': c.rads || '',
       'Notes': c.notes || '',
+      'Notes/Requests': normalizeRequests(c.requests).map(r=>`${r.text} [${r.status||'Pending'}]`).join(' | '),
       'Registered By': c.createdByName || '',
       'Registered On': c.createdAt ? formatDateShort(c.createdAt) : '',
       'Last Edited By': c.updatedByName || '',
@@ -865,7 +1266,7 @@ async function loadDoctors(){
 function renderDoctors(){
   const wrap = document.getElementById('doctorsList');
   if(!doctorsCache.length){ wrap.innerHTML = '<div class="hint">No doctor accounts yet.</div>'; return; }
-  wrap.innerHTML = doctorsCache.map(d=>`
+  wrap.innerHTML = doctorsCache.map((d,i)=>`
     <div class="doctor-row">
       <div class="doctor-info">
         <div class="doctor-name">${esc(d.display_name)}
@@ -873,10 +1274,86 @@ function renderDoctors(){
         </div>
         <div class="doctor-email">${esc(d.email)}</div>
       </div>
-      <button class="doctor-toggle ${d.is_active?'disable':'enable'}" onclick="toggleDoctor('${d.id}', ${!d.is_active})">
-        ${d.is_active ? '🚫 Disable' : '✅ Enable'}
-      </button>
+      <div class="doctor-actions">
+        <button class="doctor-mini-btn" onclick="moveDoctor('${d.id}', -1)" title="Move up" ${i===0?'disabled':''}>▲</button>
+        <button class="doctor-mini-btn" onclick="moveDoctor('${d.id}', 1)" title="Move down" ${i===doctorsCache.length-1?'disabled':''}>▼</button>
+        <button class="doctor-mini-btn" onclick="openEditDoctor('${d.id}')" title="Edit">✏️</button>
+        <button class="doctor-toggle ${d.is_active?'disable':'enable'}" onclick="toggleDoctor('${d.id}', ${!d.is_active})">
+          ${d.is_active ? '🚫 Disable' : '✅ Enable'}
+        </button>
+        <button class="doctor-mini-btn danger" onclick="deleteDoctor('${d.id}')" title="Delete">🗑️</button>
+      </div>
     </div>`).join('');
+}
+
+// Swaps a doctor's position with its neighbor (up/down), then persists the
+// full new order. Admin-only — this whole section is hidden otherwise.
+async function moveDoctor(id, dir){
+  const idx = doctorsCache.findIndex(d=>String(d.id)===String(id));
+  const swapWith = idx + dir;
+  if(idx===-1 || swapWith<0 || swapWith>=doctorsCache.length) return;
+  const arr = doctorsCache.slice();
+  [arr[idx], arr[swapWith]] = [arr[swapWith], arr[idx]];
+  doctorsCache = arr;
+  renderDoctors();
+  try{
+    const order = doctorsCache.map(d=>d.id);
+    const r = await authedFetch('/api/doctors/reorder', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({order})});
+    const res = await r.json();
+    if(res.error) throw new Error(res.error);
+  }catch(e){
+    console.error('reorder-doctors error:', e);
+    showToast('Error saving order: ' + e.message);
+    await loadDoctors();
+  }
+}
+
+function openEditDoctor(id){
+  const d = doctorsCache.find(x=>String(x.id)===String(id));
+  if(!d) return;
+  document.getElementById('ed_id').value = d.id;
+  document.getElementById('ed_name').value = d.display_name || '';
+  document.getElementById('ed_email').value = d.email || '';
+  document.getElementById('ed_role').value = d.role || 'doctor';
+  document.getElementById('ed_password').value = '';
+  document.getElementById('editDoctorOverlay').classList.add('active');
+}
+function closeEditDoctor(){ document.getElementById('editDoctorOverlay').classList.remove('active'); }
+
+async function saveEditDoctor(){
+  const id = document.getElementById('ed_id').value;
+  const displayName = document.getElementById('ed_name').value.trim();
+  const email = document.getElementById('ed_email').value.trim();
+  const role = document.getElementById('ed_role').value;
+  const password = document.getElementById('ed_password').value;
+  if(!displayName || !email){ showToast('Please fill name and email'); return; }
+  try{
+    const r = await authedFetch('/api/doctors/update', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({id, displayName, email, role, password})});
+    const res = await r.json();
+    if(res.error) throw new Error(res.error);
+    showToast('Doctor account updated ✅');
+    closeEditDoctor();
+    await loadDoctors();
+  }catch(e){
+    console.error('update-doctor error:', e);
+    showToast('Error updating account: ' + e.message);
+  }
+}
+
+async function deleteDoctor(id){
+  const d = doctorsCache.find(x=>String(x.id)===String(id));
+  if(!d) return;
+  if(!confirm(`Delete the account for "${d.display_name}"? Their past cases stay unchanged, but they will no longer be able to sign in.`)) return;
+  try{
+    const r = await authedFetch('/api/doctors/delete', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({id})});
+    const res = await r.json();
+    if(res.error) throw new Error(res.error);
+    showToast('Doctor account deleted ✅');
+    await loadDoctors();
+  }catch(e){
+    console.error('delete-doctor error:', e);
+    showToast('Error deleting account: ' + e.message);
+  }
 }
 
 async function createDoctor(){

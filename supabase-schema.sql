@@ -65,10 +65,17 @@ create table if not exists profiles (
   display_name text not null,
   role text not null default 'doctor', -- 'doctor' or 'admin'
   is_active boolean not null default true,
+  sort_order integer not null default 0, -- manual ordering set by the Admin in Doctors (Accounts)
   created_at timestamptz not null default now()
 );
 
+-- If you already have this table from an earlier version, this adds the
+-- new "sort_order" column (used for manual drag/­sort ordering) without
+-- touching your existing data.
+alter table profiles add column if not exists sort_order integer not null default 0;
+
 create index if not exists profiles_email_idx on profiles (email);
+create index if not exists profiles_sort_idx on profiles (sort_order);
 
 -- Security: RLS is on, no public policies.
 -- The only access path is via the service_role key used server-side by the

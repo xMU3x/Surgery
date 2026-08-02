@@ -7,7 +7,7 @@ export async function onRequestGet({ request, env }) {
     await requireAdmin(request, env);
     const { base, headers } = sb(env);
     const r = await fetch(
-      `${base}/profiles?select=id,email,display_name,is_active,role,created_at&order=created_at.asc`,
+      `${base}/profiles?select=id,email,display_name,is_active,role,sort_order,created_at&order=sort_order.asc,created_at.asc`,
       { headers }
     );
     if (!r.ok) throw new Error(`Supabase error ${r.status}: ${await r.text()}`);
