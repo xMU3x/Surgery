@@ -167,26 +167,34 @@ tbody tr:last-child td{border-bottom:none;}
 .case-check{width:18px;height:18px;accent-color:var(--teal);cursor:pointer;flex-shrink:0;}
 
 /* ---- Interactive case cards (main interface) ---- */
-.cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:14px;}
-.case-card{background:var(--s1);border:1px solid var(--border);border-radius:var(--r);padding:14px 16px;transition:.15s;cursor:pointer;position:relative;}
+.cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;}
+.case-card{background:var(--s1);border:1px solid var(--border);border-radius:var(--r);padding:10px 12px;transition:.15s;cursor:pointer;position:relative;}
 .case-card:hover{border-color:var(--teal);box-shadow:0 4px 18px rgba(0,0,0,.25);transform:translateY(-1px);}
-.case-card-top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:10px;}
+.case-card-top{display:flex;justify-content:space-between;align-items:flex-start;gap:6px;margin-bottom:8px;}
 .case-card-select{margin-top:2px;}
-.case-card-name{font-weight:800;font-size:1rem;color:var(--text);}
+.case-card-name{font-weight:800;font-size:.88rem;color:var(--text);display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
 .case-card-badges{display:flex;gap:6px;flex-wrap:wrap;margin-top:4px;}
-.case-card-actions{display:flex;gap:6px;flex-shrink:0;}
-.case-card-brief{display:grid;grid-template-columns:1fr 1fr;gap:6px 12px;font-size:.78rem;color:var(--t2);margin-bottom:8px;}
+.case-card-actions{display:flex;gap:5px;flex-shrink:0;flex-wrap:wrap;justify-content:flex-end;}
+.case-card-actions .icon-btn{width:25px;height:25px;font-size:.72rem;}
+.case-card-brief{display:grid;grid-template-columns:1fr 1fr;gap:4px 10px;font-size:.72rem;color:var(--t2);margin-bottom:6px;}
 .case-card-brief b{color:var(--text);font-weight:700;}
-.case-card-diag{font-size:.8rem;color:var(--text);line-height:1.5;margin-bottom:10px;background:var(--s2);border-radius:var(--rs);padding:8px 10px;}
-.case-card-vitals{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;}
-.vital-chip{display:inline-flex;align-items:center;gap:4px;font-size:.7rem;font-weight:800;padding:3px 9px;border-radius:50px;background:var(--blue-dim);color:var(--blue);white-space:nowrap;}
-.case-card-toggle{display:flex;align-items:center;justify-content:center;gap:6px;font-size:.74rem;font-weight:700;color:var(--teal);padding:6px 0;border-top:1px dashed var(--border2);}
-.case-card-details{display:none;grid-template-columns:1fr 1fr;gap:8px 14px;margin-top:10px;padding-top:10px;border-top:1px solid var(--border);font-size:.78rem;}
+.case-card-diag{font-size:.74rem;color:var(--text);line-height:1.4;margin:4px 0 6px;background:var(--s2);border-radius:var(--rs);padding:6px 8px;}
+.case-card-roles{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:6px;}
+.role-chip{display:inline-block;font-size:.6rem;font-weight:800;padding:2px 8px;border-radius:20px;white-space:nowrap;line-height:1.6;}
+.role-chip-senior{background:rgba(74,158,255,.12);color:#8fc4ff;}
+.role-chip-consultant{background:rgba(46,204,113,.12);color:#87e0ab;}
+.role-chip-department{background:rgba(245,166,35,.12);color:#f5c97a;}
+.case-card-vitals{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;}
+.vital-chip{display:inline-flex;align-items:center;gap:4px;font-size:.66rem;font-weight:800;padding:2px 8px;border-radius:50px;background:var(--blue-dim);color:var(--blue);white-space:nowrap;}
+.case-card-toggle{display:flex;align-items:center;justify-content:center;gap:6px;font-size:.68rem;font-weight:700;color:var(--teal);padding:5px 0;border-top:1px dashed var(--border2);}
+.case-card-details{display:none;grid-template-columns:1fr 1fr;gap:6px 12px;margin-top:8px;padding-top:8px;border-top:1px solid var(--border);font-size:.72rem;}
 .case-card-details.open{display:grid;}
 .case-card-details .cd-item{min-width:0;}
-.case-card-details .cd-item span.k{display:block;color:var(--teal);font-weight:800;font-size:.68rem;text-transform:uppercase;letter-spacing:.02em;margin-bottom:3px;}
+.case-card-details .cd-item span.k{display:block;color:var(--teal);font-weight:800;font-size:.64rem;text-transform:uppercase;letter-spacing:.02em;margin-bottom:2px;}
 .case-card-details .cd-item span.v{color:var(--text);white-space:pre-wrap;word-break:break-word;}
 .case-card-details .cd-full{grid-column:1/-1;}
+.btn-exit{background:rgba(245,166,35,.13);color:var(--amber);border:1px solid rgba(245,166,35,.3);}
+.btn-exit:hover{border-color:var(--amber);}
 
 /* ---- Notes / Requests task cards (shown above the case list) ---- */
 .tasks-wrap{margin-bottom:20px;}
