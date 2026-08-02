@@ -203,8 +203,11 @@ tbody tr:last-child td{border-bottom:none;}
 .task-card{background:var(--s1);border:1px solid var(--border2);border-left:3px solid var(--amber);border-radius:var(--rs);padding:10px 13px;}
 .task-card.done{border-left-color:var(--green);}
 .task-card.unavailable{border-left-color:var(--red);}
+.task-card-top{display:flex;justify-content:space-between;align-items:flex-start;gap:6px;}
 .task-card-pt{font-weight:800;font-size:.82rem;margin-bottom:2px;}
 .task-card-text{font-size:.8rem;color:var(--text);margin-bottom:8px;line-height:1.4;}
+.task-hide-btn{background:var(--s3);border:1px solid var(--border2);color:var(--t2);border-radius:7px;width:24px;height:24px;font-size:.72rem;cursor:pointer;flex-shrink:0;}
+.task-hide-btn:hover{border-color:var(--teal);color:var(--teal);}
 .task-status-row{display:flex;gap:6px;flex-wrap:wrap;}
 .task-status-btn{flex:1;background:var(--s3);border:1px solid var(--border2);color:var(--t2);border-radius:7px;padding:5px 6px;font-family:inherit;font-size:.68rem;font-weight:800;cursor:pointer;white-space:nowrap;}
 .task-status-btn.active-done{background:var(--green-dim);color:var(--green);border-color:rgba(46,204,113,.35);}
@@ -657,6 +660,25 @@ function formatDateShort(iso){
   catch(e){ return ''; }
 }
 
+// Formats a plain "YYYY-MM-DD" date (from a <input type=date>) together with
+// its weekday name, e.g. "Sun, 2 Aug 2026" — used for the Admission date.
+function formatDateWithDay(dateStr){
+  if(!dateStr) return '';
+  try{
+    const d = new Date(dateStr + 'T00:00:00');
+    if(isNaN(d.getTime())) return dateStr;
+    return d.toLocaleDateString(undefined, {weekday:'short', year:'numeric', month:'short', day:'numeric'});
+  }catch(e){ return dateStr; }
+}
+
+// Best-effort display name for the currently signed-in doctor, used to stamp
+// "who exactly discharged this case".
+function currentUserName(){
+  const user = currentSession && currentSession.user;
+  if(!user) return 'Unknown';
+  return (user.user_metadata && user.user_metadata.display_name) || user.email || 'Unknown';
+}
+
 function byCell(c){
   const created = c.createdByName ? `<b>${esc(c.createdByName)}</b>${c.createdAt?(' · '+formatDateShort(c.createdAt)):''}` : '-';
   let edited = '';
@@ -699,6 +721,11 @@ function vitalityIsEmpty(v){
 // status is one of: 'Pending', 'Done', 'Not Available'
 function normalizeRequests(list){
   return Array.isArray(list) ? list.filter(r=>r && r.text && r.text.trim()) : [];
+}
+// Requests that were hidden/archived (already handled) don't show on the
+// main "Open Requests" board anymore, but stay saved with the case.
+function visibleRequests(list){
+  return normalizeRequests(list).filter(r=>!r.hidden);
 }
 function requestStatusClass(status){
   if(status === 'Done') return 'active-done';
@@ -745,29 +772,32 @@ function renderList(){
     const deleteBtnHtml = config.isAdmin
       ? `<button class="icon-btn" onclick="event.stopPropagation();confirmDeleteCase('${c.id}')" title="Delete">🗑️</button>`
       : '';
+    const exitBtnHtml = !isArchived
+      ? `<button class="icon-btn btn-exit" onclick="event.stopPropagation();dischargeCase('${c.id}')" title="Discharge (خروج)">🚪</button>`
+      : '';
     return `<div class="case-card" onclick="toggleCardDetails('${c.id}')">
       <div class="case-card-top">
         ${checkboxHtml}
         <div style="flex:1;min-width:0;">
-          <div class="case-card-name">${esc(c.ptName)}</div>
-          <div class="case-card-badges">
-            <span class="role-badge">${esc(c.senior)||'-'}</span>
-            <span class="role-badge">${esc(c.department)||'-'}</span>
-            ${isArchived?`<span class="pill pill-archived">Discharged ${esc(c.dayOut)}</span>`:`<span class="pill">In dept</span>`}
+          <div class="case-card-name">${esc(c.ptName)} ${isArchived?`<span class="pill pill-archived">Discharged ${esc(c.dayOut)}</span>`:`<span class="pill">In dept</span>`}</div>
+          <div class="case-card-diag">${c.diagnosis ? wrapWords(c.diagnosis, 14) : '-'}</div>
+          <div class="case-card-roles">
+            <span class="role-chip role-chip-senior">${esc(c.senior)||'-'}</span>
+            <span class="role-chip role-chip-consultant">${esc(c.consultant)||'-'}</span>
+            <span class="role-chip role-chip-department">${esc(c.department)||'-'}</span>
           </div>
         </div>
         <div class="case-card-actions">
           <button class="icon-btn" onclick="event.stopPropagation();openDetail('${c.id}')" title="Edit">✏️</button>
+          ${exitBtnHtml}
           ${deleteBtnHtml}
         </div>
       </div>
       <div class="case-card-brief">
-        <div><b>Consultant:</b> ${esc(c.consultant)||'-'}</div>
         <div><b>Age:</b> ${esc(c.age)||'-'}</div>
-        <div><b>Admission:</b> ${esc(c.admission)||'-'}</div>
+        <div><b>Admission:</b> ${c.admission ? formatDateWithDay(c.admission) : '-'}</div>
         <div><b>Day out:</b> ${esc(c.dayOut)||'-'}</div>
       </div>
-      ${c.diagnosis ? `<div class="case-card-diag">${wrapWords(c.diagnosis, 14)}</div>` : ''}
       ${vitalsHtml ? `<div class="case-card-vitals">${vitalsHtml}</div>` : ''}
       <div class="case-card-toggle">${isOpen? '▲ Hide full details' : '▼ Show full details'}</div>
       <div class="case-card-details ${isOpen?'open':''}">
@@ -778,6 +808,7 @@ function renderList(){
         <div class="cd-item"><span class="k">Rads</span><span class="v">${esc(c.rads)||'-'}</span></div>
         <div class="cd-item cd-full"><span class="k">Notes</span><span class="v">${esc(c.notes)||'-'}</span></div>
         <div class="cd-item cd-full"><span class="k">Registered / Edited by</span><span class="v">${byCell(c)}</span></div>
+        <div class="cd-item cd-full"><span class="k">Discharged by</span><span class="v">${c.dischargedByName ? esc(c.dischargedByName)+(c.dischargedAt?(' · '+formatDateShort(c.dischargedAt)):'') : '-'}</span></div>
       </div>
     </div>`;
   }).join('');
@@ -800,14 +831,17 @@ function toggleCardDetails(id){
 function renderTasks(){
   const wrap = document.getElementById('tasksWrap');
   const area = document.getElementById('tasksArea');
-  const withRequests = cases.filter(c=>normalizeRequests(c.requests).length);
+  const withRequests = cases.filter(c=>visibleRequests(c.requests).length);
   if(!withRequests.length){ wrap.style.display = 'none'; area.innerHTML = ''; return; }
   wrap.style.display = 'block';
   area.innerHTML = withRequests.flatMap(c=>{
-    return normalizeRequests(c.requests).map(req=>{
+    return visibleRequests(c.requests).map(req=>{
       const cls = req.status === 'Done' ? 'done' : (req.status === 'Not Available' ? 'unavailable' : '');
       return `<div class="task-card ${cls}">
-        <div class="task-card-pt">${esc(c.ptName)}</div>
+        <div class="task-card-top">
+          <div class="task-card-pt">${esc(c.ptName)}</div>
+          <button class="task-hide-btn" onclick="hideRequest('${c.id}','${req.id}')" title="Already done — hide and move to archive">🗄️</button>
+        </div>
         <div class="task-card-text">${esc(req.text)}</div>
         <div class="task-status-row">
           <button class="task-status-btn ${req.status==='Done'?'active-done':''}" onclick="updateRequestStatus('${c.id}','${req.id}','Done')">Done</button>
@@ -833,6 +867,26 @@ async function updateRequestStatus(caseId, reqId, status){
   }catch(e){
     console.error('update-request-status error:', e);
     showToast('Error updating request: ' + e.message);
+  }
+}
+
+// Hides an already-handled request from the main "Open Requests" board and
+// moves it to the archive — it stays saved on the case, just not shown here.
+async function hideRequest(caseId, reqId){
+  const c = cases.find(x=>String(x.id)===String(caseId));
+  if(!c) return;
+  const reqs = normalizeRequests(c.requests).map(r=> r.id===reqId ? {...r, hidden:true} : r);
+  const item = { ...c, requests: reqs };
+  try{
+    const r = await authedFetch(`${API_CASES}/save`, {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(item)});
+    const res = await r.json();
+    if(res.error) throw new Error(res.error);
+    c.requests = reqs;
+    renderTasks();
+    showToast('Moved to archive ✅');
+  }catch(e){
+    console.error('hide-request error:', e);
+    showToast('Error archiving request: ' + e.message);
   }
 }
 
@@ -985,13 +1039,14 @@ function renderRequestRows(list){
   wrap.innerHTML = (list||[]).map(r=>{
     const rid = r.id || ('req'+(++requestRowSeq));
     const status = r.status || 'Pending';
-    return `<div class="request-row" data-rid="${esc(rid)}">
+    const hiddenBadge = r.hidden ? ` <span style="color:var(--t2);font-size:.7rem;">(archived)</span>` : '';
+    return `<div class="request-row" data-rid="${esc(rid)}" data-hidden="${r.hidden?'1':''}">
       <input type="text" value="${esc(r.text||'')}" placeholder="e.g. Repeat CBC this afternoon">
       <select>
         <option value="Pending" ${status==='Pending'?'selected':''}>Pending</option>
         <option value="Done" ${status==='Done'?'selected':''}>Done</option>
         <option value="Not Available" ${status==='Not Available'?'selected':''}>Not Available</option>
-      </select>
+      </select>${hiddenBadge}
       <button type="button" class="rm" onclick="this.closest('.request-row').remove()">✕</button>
     </div>`;
   }).join('');
@@ -1016,7 +1071,8 @@ function collectRequestsFromForm(){
   return Array.from(document.querySelectorAll('#requestsList .request-row')).map(row=>{
     const text = row.querySelector('input[type=text]').value.trim();
     const status = row.querySelector('select').value;
-    return text ? { id: row.dataset.rid, text, status } : null;
+    const hidden = row.dataset.hidden === '1';
+    return text ? { id: row.dataset.rid, text, status, ...(hidden?{hidden:true}:{}) } : null;
   }).filter(Boolean);
 }
 
@@ -1067,6 +1123,28 @@ async function openDetail(id){
   const c = cases.find(x=>String(x.id)===String(id));
   if(!c) return;
   openForm(c);
+}
+
+// "خروج" — one-click discharge: stamps today's date as Day out, plus exactly
+// who discharged the case and when, without opening the full edit form.
+async function dischargeCase(id){
+  const c = cases.find(x=>String(x.id)===String(id));
+  if(!c) return;
+  if(c.dayOut){ showToast('This case is already discharged'); return; }
+  if(!confirm(`Discharge "${c.ptName}" today?`)) return;
+  const today = new Date().toISOString().slice(0,10);
+  const nowIso = new Date().toISOString();
+  const item = { ...c, dayOut: today, dischargedByName: currentUserName(), dischargedAt: nowIso };
+  try{
+    const r = await authedFetch(`${API_CASES}/save`, {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(item)});
+    const res = await r.json();
+    if(res.error) throw new Error(res.error);
+    showToast('Case discharged ✅');
+    await fetchList();
+  }catch(e){
+    console.error('discharge error:', e);
+    showToast('Error while discharging: ' + e.message);
+  }
 }
 
 async function deleteCase(id){
