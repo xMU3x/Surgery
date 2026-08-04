@@ -180,13 +180,16 @@ tbody tr:last-child td{border-bottom:none;}
 .case-card-brief b{color:var(--text);font-weight:700;}
 .case-card-brief-col{display:flex;flex-direction:column;gap:4px;min-width:0;}
 .case-card-roles-col{align-items:flex-end;gap:5px;flex-shrink:0;}
-.case-card-diag{font-size:.74rem;color:var(--text);line-height:1.4;margin:4px 0 6px;background:var(--s2);border-radius:var(--rs);padding:6px 8px;}
+.case-card-diag{width:100%;font-size:.74rem;color:var(--text);line-height:1.4;margin:6px 0 8px;background:var(--s2);border-radius:var(--rs);padding:8px 10px;box-sizing:border-box;}
+.case-card-dept-row{margin-bottom:2px;}
 .role-chip{display:inline-block;font-size:.6rem;font-weight:800;padding:2px 8px;border-radius:20px;white-space:nowrap;line-height:1.6;}
 .role-chip-senior{background:rgba(74,158,255,.12);color:#8fc4ff;}
 .role-chip-consultant{background:rgba(46,204,113,.12);color:#87e0ab;}
 .role-chip-department{background:rgba(245,166,35,.12);color:#f5c97a;}
 .case-card-vitals{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;}
+.case-card-labs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;}
 .vital-chip{display:inline-flex;align-items:center;gap:4px;font-size:.66rem;font-weight:800;padding:2px 8px;border-radius:50px;background:var(--blue-dim);color:var(--blue);white-space:nowrap;}
+.lab-chip{background:var(--green-dim);color:var(--green);}
 .case-card-toggle{display:flex;align-items:center;justify-content:center;gap:6px;font-size:.68rem;font-weight:700;color:var(--teal);padding:5px 0;border-top:1px dashed var(--border2);}
 .case-card-details{display:none;grid-template-columns:1fr 1fr;gap:6px 12px;margin-top:8px;padding-top:8px;border-top:1px solid var(--border);font-size:.72rem;}
 .case-card-details.open{display:grid;}
@@ -219,6 +222,8 @@ tbody tr:last-child td{border-bottom:none;}
 .vital-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:14px;}
 @media(max-width:640px){.vital-grid{grid-template-columns:1fr 1fr;}}
 .vital-grid .field{margin-bottom:0;}
+.labs-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:10px;}
+@media(max-width:640px){.labs-grid{grid-template-columns:1fr 1fr;}}
 .request-row{display:flex;gap:8px;align-items:center;background:var(--s2);border:1px solid var(--border);border-radius:var(--rs);padding:8px 10px;margin-bottom:8px;flex-wrap:wrap;}
 .request-row input[type=text]{flex:1;min-width:140px;background:transparent;border:none;color:var(--text);font-family:inherit;font-size:.85rem;}
 .request-row input[type=text]:focus{outline:none;}
@@ -279,6 +284,7 @@ tbody tr:last-child td{border-bottom:none;}
     <span class="count" id="bulkCount">0 selected</span>
     <div class="spacer"></div>
     <button class="btn" onclick="openBulkEdit()">✏️ Bulk Edit</button>
+    <button class="btn" onclick="confirmBulkCopy()">📄 Copy Selected</button>
     <button class="btn btn-danger" onclick="confirmBulkDelete()">🗑️ Delete Selected</button>
     <button class="btn" onclick="clearSelection()">✕ Clear</button>
   </div>
@@ -334,10 +340,29 @@ tbody tr:last-child td{border-bottom:none;}
 
       <div class="subhdr">Investigation</div>
       <div class="field"><label>Investigation</label><textarea id="f_investigation" placeholder="General investigation notes"></textarea></div>
-      <div class="grid2">
-        <div class="field"><label>Labs</label><textarea id="f_labs" placeholder="Lab results"></textarea></div>
-        <div class="field"><label>Rads</label><textarea id="f_rads" placeholder="Radiology results"></textarea></div>
+
+      <div class="field">
+        <label>Labs</label>
+        <div class="hint">Fill in only what applies — each one only shows on the main screen if it has data, and they're all grouped together under the Labs column (just like Vitality).</div>
+        <div class="labs-grid">
+          <input id="f_lab_tlc" placeholder="TLC">
+          <input id="f_lab_hgb" placeholder="Hgb">
+          <input id="f_lab_net" placeholder="NET">
+          <input id="f_lab_plt" placeholder="PLT">
+          <input id="f_lab_alb" placeholder="Alb">
+          <input id="f_lab_inr" placeholder="INR">
+          <input id="f_lab_altast" placeholder="ALT / AST">
+          <input id="f_lab_bilirubin" placeholder="Bilirubin">
+          <input id="f_lab_creat" placeholder="Creat">
+          <input id="f_lab_hbv" placeholder="HBV">
+          <input id="f_lab_hcv" placeholder="HCV">
+        </div>
+        <div class="hint" style="margin-top:10px;">Need a lab that's not listed above? Add it here — it will show alongside the others.</div>
+        <div id="labsExtraList"></div>
+        <button type="button" class="add-row-btn" onclick="addLabExtraRow()">＋ Add other lab</button>
       </div>
+
+      <div class="field"><label>Rads</label><textarea id="f_rads" placeholder="Radiology results"></textarea></div>
 
       <div class="field"><label>Notes</label><textarea id="f_notes" placeholder="Additional notes"></textarea></div>
 
@@ -718,6 +743,95 @@ function vitalityIsEmpty(v){
   return !VITAL_KEYS.some(k=>vit[k.key] && String(vit[k.key]).trim()) && !vit.legacy;
 }
 
+/* ---------- Labs: same pattern as Vitality — named boxes, only filled ones
+   show, plus any custom labs the doctor adds also show alongside them. ---------- */
+const LAB_KEYS = [
+  { key:'tlc',       label:'TLC' },
+  { key:'hgb',       label:'Hgb' },
+  { key:'net',       label:'NET' },
+  { key:'plt',       label:'PLT' },
+  { key:'alb',       label:'Alb' },
+  { key:'inr',       label:'INR' },
+  { key:'altAst',    label:'ALT / AST' },
+  { key:'bilirubin', label:'Bilirubin' },
+  { key:'creat',     label:'Creat' },
+  { key:'hbv',       label:'HBV' },
+  { key:'hcv',       label:'HCV' },
+];
+// Normalizes whatever is stored (new object shape, or a legacy plain string
+// from before this feature existed) into a consistent { tlc, hgb, ..., extra:[] } shape.
+function normalizeLabs(v){
+  if(v && typeof v === 'object' && !Array.isArray(v)) return Object.assign({extra:[]}, v, {extra: Array.isArray(v.extra)?v.extra:[]});
+  if(typeof v === 'string' && v.trim()) return { extra:[], legacy: v.trim() };
+  return { extra:[] };
+}
+// Only labs (fixed or custom) that actually have data are shown, as chips —
+// exactly like Vitality.
+function renderLabsChips(v){
+  const labs = normalizeLabs(v);
+  const chips = LAB_KEYS
+    .filter(k=>labs[k.key] && String(labs[k.key]).trim())
+    .map(k=>`<span class="vital-chip lab-chip">${k.label}: ${esc(labs[k.key])}</span>`);
+  (labs.extra||[]).forEach(x=>{
+    if(x && x.value && String(x.value).trim()){
+      chips.push(`<span class="vital-chip lab-chip">${esc(x.label && x.label.trim() ? x.label : 'Lab')}: ${esc(x.value)}</span>`);
+    }
+  });
+  if(labs.legacy) chips.push(`<span class="vital-chip lab-chip">${esc(labs.legacy)}</span>`);
+  return chips.join('');
+}
+function labsIsEmpty(v){
+  const labs = normalizeLabs(v);
+  const hasFixed = LAB_KEYS.some(k=>labs[k.key] && String(labs[k.key]).trim());
+  const hasExtra = (labs.extra||[]).some(x=>x && x.value && String(x.value).trim());
+  return !hasFixed && !hasExtra && !labs.legacy;
+}
+// Plain-text version (no HTML) for the Excel export.
+function labsToText(v){
+  const labs = normalizeLabs(v);
+  const parts = LAB_KEYS.filter(k=>labs[k.key] && String(labs[k.key]).trim()).map(k=>`${k.label}: ${labs[k.key]}`);
+  (labs.extra||[]).forEach(x=>{
+    if(x && x.value && String(x.value).trim()) parts.push(`${(x.label&&x.label.trim())||'Lab'}: ${x.value}`);
+  });
+  if(labs.legacy) parts.push(labs.legacy);
+  return parts.join(' | ');
+}
+
+/* ---------- Extra/custom lab rows inside the Add/Edit form ---------- */
+let labExtraSeq = 0;
+function renderLabExtraRows(list){
+  const wrap = document.getElementById('labsExtraList');
+  if(!wrap) return;
+  wrap.innerHTML = (list||[]).map(x=>{
+    const rid = 'labx'+(++labExtraSeq);
+    return `<div class="request-row" data-rid="${rid}">
+      <input type="text" class="lab-extra-label" value="${esc(x.label||'')}" placeholder="Lab name (e.g. Amylase)">
+      <input type="text" class="lab-extra-value" value="${esc(x.value||'')}" placeholder="Value">
+      <button type="button" class="rm" onclick="this.closest('.request-row').remove()">✕</button>
+    </div>`;
+  }).join('');
+}
+function addLabExtraRow(){
+  const wrap = document.getElementById('labsExtraList');
+  if(!wrap) return;
+  const rid = 'labx'+(++labExtraSeq);
+  const row = document.createElement('div');
+  row.className = 'request-row';
+  row.dataset.rid = rid;
+  row.innerHTML = `
+      <input type="text" class="lab-extra-label" placeholder="Lab name (e.g. Amylase)">
+      <input type="text" class="lab-extra-value" placeholder="Value">
+      <button type="button" class="rm" onclick="this.closest('.request-row').remove()">✕</button>`;
+  wrap.appendChild(row);
+}
+function collectLabExtraFromForm(){
+  return Array.from(document.querySelectorAll('#labsExtraList .request-row')).map(row=>{
+    const label = row.querySelector('.lab-extra-label').value.trim();
+    const value = row.querySelector('.lab-extra-value').value.trim();
+    return (label || value) ? { label, value } : null;
+  }).filter(Boolean);
+}
+
 /* ---------- Notes / Requests: task-style items with a status ---------- */
 // status is one of: 'Pending', 'Done', 'Not Available'
 function normalizeRequests(list){
@@ -767,6 +881,7 @@ function renderList(){
     const isOpen = expandedCaseIds.has(String(c.id));
     const isChecked = selectedCaseIds.has(String(c.id));
     const vitalsHtml = renderVitalityChips(c.vitality);
+    const labsHtml = renderLabsChips(c.labs);
     const checkboxHtml = config.isAdmin
       ? `<input type="checkbox" class="case-check case-card-select" onclick="event.stopPropagation();toggleCaseSelection('${c.id}', this.checked)" ${isChecked?'checked':''}>`
       : '';
@@ -781,14 +896,16 @@ function renderList(){
         ${checkboxHtml}
         <div style="flex:1;min-width:0;">
           <div class="case-card-name">${esc(c.ptName)} ${isArchived?`<span class="pill pill-archived">Discharged ${esc(c.dayOut)}</span>`:''}</div>
-          <div class="case-card-diag">${c.diagnosis ? wrapWords(c.diagnosis, 14) : '-'}</div>
+          <div class="case-card-dept-row"><span class="role-chip role-chip-department">${esc(c.department)||'-'}</span></div>
         </div>
         <div class="case-card-actions">
           <button class="icon-btn" onclick="event.stopPropagation();openDetail('${c.id}')" title="Edit">✏️</button>
+          <button class="icon-btn" onclick="event.stopPropagation();duplicateCase('${c.id}')" title="Duplicate (نسخ الحالة)">📄</button>
           ${exitBtnHtml}
           ${deleteBtnHtml}
         </div>
       </div>
+      <div class="case-card-diag">${c.diagnosis ? wrapWords(c.diagnosis, 14) : '-'}</div>
       <div class="case-card-brief">
         <div class="case-card-brief-col">
           <div><b>Age:</b> ${esc(c.age)||'-'}</div>
@@ -798,16 +915,15 @@ function renderList(){
         <div class="case-card-brief-col case-card-roles-col">
           <span class="role-chip role-chip-senior">${esc(c.senior)||'-'}</span>
           <span class="role-chip role-chip-consultant">${esc(c.consultant)||'-'}</span>
-          <span class="role-chip role-chip-department">${esc(c.department)||'-'}</span>
         </div>
       </div>
       ${vitalsHtml ? `<div class="case-card-vitals">${vitalsHtml}</div>` : ''}
+      ${labsHtml ? `<div class="case-card-labs">${labsHtml}</div>` : ''}
       <div class="case-card-toggle">${isOpen? '▲ Hide full details' : '▼ Show full details'}</div>
       <div class="case-card-details ${isOpen?'open':''}">
         <div class="cd-item"><span class="k">Feeding</span><span class="v">${esc(c.feeding)||'-'}</span></div>
         <div class="cd-item"><span class="k">Drain</span><span class="v">${esc(c.drain)||'-'}</span></div>
         <div class="cd-item cd-full"><span class="k">Investigation</span><span class="v">${esc(c.investigation)||'-'}</span></div>
-        <div class="cd-item"><span class="k">Labs</span><span class="v">${esc(c.labs)||'-'}</span></div>
         <div class="cd-item"><span class="k">Rads</span><span class="v">${esc(c.rads)||'-'}</span></div>
         <div class="cd-item cd-full"><span class="k">Notes</span><span class="v">${esc(c.notes)||'-'}</span></div>
         <div class="cd-item cd-full"><span class="k">Registered / Edited by</span><span class="v">${byCell(c)}</span></div>
@@ -941,6 +1057,49 @@ async function bulkDeleteSelected(){
   }
 }
 
+// Copies every selected case with ALL of its data (diagnosis, vitals, labs,
+// notes, requests...) — unlike the single-card duplicate, which only keeps
+// Senior / Consultant / Department. Each copy gets a fresh id and a fresh
+// registration trail (it's a new record from this moment on).
+function confirmBulkCopy(){
+  const n = selectedCaseIds.size;
+  if(!n){ showToast('Select at least one case first'); return; }
+  if(!confirm(`Copy ${n} selected case(s) with all their data?`)) return;
+  bulkCopySelected();
+}
+async function bulkCopySelected(){
+  const ids = Array.from(selectedCaseIds);
+  const toCopy = ids.map(id=>cases.find(c=>String(c.id)===String(id))).filter(Boolean);
+  if(!toCopy.length) return;
+  try{
+    let i = 0;
+    for(const c of toCopy){
+      i++;
+      const newId = Date.now().toString() + '-' + i + '-' + Math.random().toString(36).slice(2,7);
+      const item = {
+        ...c,
+        id: newId,
+        createdByName: currentUserName(),
+        createdAt: new Date().toISOString(),
+        updatedByName: '',
+        updatedAt: '',
+        dischargedByName: '',
+        dischargedAt: '',
+      };
+      const r = await authedFetch(`${API_CASES}/save`, {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(item)});
+      const res = await r.json();
+      if(res.error) throw new Error(res.error);
+    }
+    showToast(`Copied ${toCopy.length} case(s) ✅`);
+    selectedCaseIds.clear();
+    document.getElementById('selectAllCheckbox').checked = false;
+    await fetchList();
+  }catch(e){
+    console.error('bulk-copy error:', e);
+    showToast('Error while copying: ' + e.message);
+  }
+}
+
 function openBulkEdit(){
   if(!selectedCaseIds.size){ showToast('Select at least one case first'); return; }
   fillSelect('be_senior', config.seniors||[]);
@@ -1017,7 +1176,19 @@ function openForm(existing){
   document.getElementById('f_feeding').value = f.feeding || '';
   document.getElementById('f_drain').value = f.drain || '';
   document.getElementById('f_investigation').value = f.investigation || '';
-  document.getElementById('f_labs').value = f.labs || '';
+  const labs = normalizeLabs(f.labs);
+  document.getElementById('f_lab_tlc').value = labs.tlc || labs.legacy || '';
+  document.getElementById('f_lab_hgb').value = labs.hgb || '';
+  document.getElementById('f_lab_net').value = labs.net || '';
+  document.getElementById('f_lab_plt').value = labs.plt || '';
+  document.getElementById('f_lab_alb').value = labs.alb || '';
+  document.getElementById('f_lab_inr').value = labs.inr || '';
+  document.getElementById('f_lab_altast').value = labs.altAst || '';
+  document.getElementById('f_lab_bilirubin').value = labs.bilirubin || '';
+  document.getElementById('f_lab_creat').value = labs.creat || '';
+  document.getElementById('f_lab_hbv').value = labs.hbv || '';
+  document.getElementById('f_lab_hcv').value = labs.hcv || '';
+  renderLabExtraRows(labs.extra || []);
   document.getElementById('f_rads').value = f.rads || '';
   document.getElementById('f_notes').value = f.notes || '';
   renderRequestRows(normalizeRequests(f.requests));
@@ -1090,6 +1261,20 @@ async function saveCase(){
     rr: document.getElementById('f_vital_rr').value.trim(),
     spo2: document.getElementById('f_vital_spo2').value.trim(),
   };
+  const labs = {
+    tlc: document.getElementById('f_lab_tlc').value.trim(),
+    hgb: document.getElementById('f_lab_hgb').value.trim(),
+    net: document.getElementById('f_lab_net').value.trim(),
+    plt: document.getElementById('f_lab_plt').value.trim(),
+    alb: document.getElementById('f_lab_alb').value.trim(),
+    inr: document.getElementById('f_lab_inr').value.trim(),
+    altAst: document.getElementById('f_lab_altast').value.trim(),
+    bilirubin: document.getElementById('f_lab_bilirubin').value.trim(),
+    creat: document.getElementById('f_lab_creat').value.trim(),
+    hbv: document.getElementById('f_lab_hbv').value.trim(),
+    hcv: document.getElementById('f_lab_hcv').value.trim(),
+    extra: collectLabExtraFromForm(),
+  };
   const item = {
     id,
     ptName,
@@ -1104,7 +1289,7 @@ async function saveCase(){
     feeding: document.getElementById('f_feeding').value.trim(),
     drain: document.getElementById('f_drain').value.trim(),
     investigation: document.getElementById('f_investigation').value.trim(),
-    labs: document.getElementById('f_labs').value.trim(),
+    labs,
     rads: document.getElementById('f_rads').value.trim(),
     notes: document.getElementById('f_notes').value.trim(),
     requests: collectRequestsFromForm(),
@@ -1126,6 +1311,16 @@ async function openDetail(id){
   const c = cases.find(x=>String(x.id)===String(id));
   if(!c) return;
   openForm(c);
+}
+
+// Duplicates a single case: opens the "New Case" form pre-filled with only
+// the Senior / Consultant / Department of the source case — every other
+// field (patient name, diagnosis, vitals, labs, notes...) starts empty.
+function duplicateCase(id){
+  const c = cases.find(x=>String(x.id)===String(id));
+  if(!c) return;
+  openForm({ senior: c.senior || '', consultant: c.consultant || '', department: c.department || '' });
+  showToast('Duplicated senior / consultant / department — fill in the rest');
 }
 
 // "خروج" — one-click discharge: stamps today's date as Day out, plus exactly
@@ -1316,7 +1511,7 @@ async function exportToExcel(){
       'Drain': c.drain || '',
       'Investigation': c.investigation || '',
       'Day Out': c.dayOut || '',
-      'Labs': c.labs || '',
+      'Labs': labsToText(c.labs),
       'Rads': c.rads || '',
       'Notes': c.notes || '',
       'Notes/Requests': normalizeRequests(c.requests).map(r=>`${r.text} [${r.status||'Pending'}]`).join(' | '),
