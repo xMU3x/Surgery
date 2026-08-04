@@ -180,13 +180,14 @@ tbody tr:last-child td{border-bottom:none;}
 .case-card-brief b{color:var(--text);font-weight:700;}
 .case-card-brief-col{display:flex;flex-direction:column;gap:4px;min-width:0;}
 .case-card-roles-col{align-items:flex-end;gap:5px;flex-shrink:0;}
-.case-card-diag{font-size:.74rem;color:var(--text);line-height:1.4;margin:4px 0 6px;background:var(--s2);border-radius:var(--rs);padding:6px 8px;}
+.case-card-diag{font-size:.74rem;color:var(--text);line-height:1.4;margin:0 0 8px;background:var(--s2);border-radius:var(--rs);padding:8px 10px;width:100%;}
 .role-chip{display:inline-block;font-size:.6rem;font-weight:800;padding:2px 8px;border-radius:20px;white-space:nowrap;line-height:1.6;}
 .role-chip-senior{background:rgba(74,158,255,.12);color:#8fc4ff;}
 .role-chip-consultant{background:rgba(46,204,113,.12);color:#87e0ab;}
 .role-chip-department{background:rgba(245,166,35,.12);color:#f5c97a;}
 .case-card-vitals{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;}
 .vital-chip{display:inline-flex;align-items:center;gap:4px;font-size:.66rem;font-weight:800;padding:2px 8px;border-radius:50px;background:var(--blue-dim);color:var(--blue);white-space:nowrap;}
+.lab-chip{display:inline-flex;align-items:center;gap:4px;font-size:.66rem;font-weight:800;padding:2px 8px;border-radius:50px;background:var(--green-dim);color:var(--green);white-space:nowrap;}
 .case-card-toggle{display:flex;align-items:center;justify-content:center;gap:6px;font-size:.68rem;font-weight:700;color:var(--teal);padding:5px 0;border-top:1px dashed var(--border2);}
 .case-card-details{display:none;grid-template-columns:1fr 1fr;gap:6px 12px;margin-top:8px;padding-top:8px;border-top:1px solid var(--border);font-size:.72rem;}
 .case-card-details.open{display:grid;}
@@ -219,6 +220,12 @@ tbody tr:last-child td{border-bottom:none;}
 .vital-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:14px;}
 @media(max-width:640px){.vital-grid{grid-template-columns:1fr 1fr;}}
 .vital-grid .field{margin-bottom:0;}
+.lab-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px;}
+@media(max-width:640px){.lab-grid{grid-template-columns:1fr 1fr;}}
+.lab-box{min-width:0;}
+.lab-box label{display:block;font-size:.68rem;font-weight:800;color:var(--green);margin-bottom:5px;text-transform:uppercase;letter-spacing:.02em;}
+.vital-grid input,.lab-box input{width:100%;background:var(--s2);border:1px solid var(--border);border-radius:var(--rs);padding:11px 13px;color:var(--text);font-family:inherit;font-size:.88rem;}
+.vital-grid input:focus,.lab-box input:focus{outline:none;border-color:var(--teal);}
 .request-row{display:flex;gap:8px;align-items:center;background:var(--s2);border:1px solid var(--border);border-radius:var(--rs);padding:8px 10px;margin-bottom:8px;flex-wrap:wrap;}
 .request-row input[type=text]{flex:1;min-width:140px;background:transparent;border:none;color:var(--text);font-family:inherit;font-size:.85rem;}
 .request-row input[type=text]:focus{outline:none;}
@@ -279,6 +286,7 @@ tbody tr:last-child td{border-bottom:none;}
     <span class="count" id="bulkCount">0 selected</span>
     <div class="spacer"></div>
     <button class="btn" onclick="openBulkEdit()">✏️ Bulk Edit</button>
+    <button class="btn" onclick="duplicateSelected()">📄 Copy Selected Cases</button>
     <button class="btn btn-danger" onclick="confirmBulkDelete()">🗑️ Delete Selected</button>
     <button class="btn" onclick="clearSelection()">✕ Clear</button>
   </div>
@@ -334,10 +342,25 @@ tbody tr:last-child td{border-bottom:none;}
 
       <div class="subhdr">Investigation</div>
       <div class="field"><label>Investigation</label><textarea id="f_investigation" placeholder="General investigation notes"></textarea></div>
-      <div class="grid2">
-        <div class="field"><label>Labs</label><textarea id="f_labs" placeholder="Lab results"></textarea></div>
-        <div class="field"><label>Rads</label><textarea id="f_rads" placeholder="Radiology results"></textarea></div>
+
+      <div class="field">
+        <label>Labs</label>
+        <div class="hint">Fill in only what applies — each one only shows on the main screen (outside this box) if it has data, just like Vitality.</div>
+        <div class="lab-grid">
+          <div class="lab-box"><label>TLC</label><input id="f_lab_tlc" placeholder="TLC"></div>
+          <div class="lab-box"><label>Hgb</label><input id="f_lab_hgb" placeholder="Hgb"></div>
+          <div class="lab-box"><label>NET</label><input id="f_lab_net" placeholder="NET"></div>
+          <div class="lab-box"><label>PLT</label><input id="f_lab_plt" placeholder="PLT"></div>
+          <div class="lab-box"><label>Alb</label><input id="f_lab_alb" placeholder="Alb"></div>
+          <div class="lab-box"><label>INR</label><input id="f_lab_inr" placeholder="INR"></div>
+          <div class="lab-box"><label>ALT / AST</label><input id="f_lab_altast" placeholder="ALT / AST"></div>
+          <div class="lab-box"><label>Bilirubin</label><input id="f_lab_bilirubin" placeholder="Bilirubin"></div>
+          <div class="lab-box"><label>Creat</label><input id="f_lab_creat" placeholder="Creat"></div>
+          <div class="lab-box"><label>HBV</label><input id="f_lab_hbv" placeholder="HBV"></div>
+          <div class="lab-box"><label>HCV</label><input id="f_lab_hcv" placeholder="HCV"></div>
+        </div>
       </div>
+      <div class="field"><label>Rads</label><textarea id="f_rads" placeholder="Radiology results"></textarea></div>
 
       <div class="field"><label>Notes</label><textarea id="f_notes" placeholder="Additional notes"></textarea></div>
 
@@ -718,6 +741,52 @@ function vitalityIsEmpty(v){
   return !VITAL_KEYS.some(k=>vit[k.key] && String(vit[k.key]).trim()) && !vit.legacy;
 }
 
+/* ---------- Labs: multiple sub-fields grouped into one column, same pattern as Vitality ---------- */
+const LAB_KEYS = [
+  { key:'tlc',       label:'TLC' },
+  { key:'hgb',       label:'Hgb' },
+  { key:'net',       label:'NET' },
+  { key:'plt',       label:'PLT' },
+  { key:'alb',       label:'Alb' },
+  { key:'inr',       label:'INR' },
+  { key:'altast',    label:'ALT / AST' },
+  { key:'bilirubin', label:'Bilirubin' },
+  { key:'creat',     label:'Creat' },
+  { key:'hbv',       label:'HBV' },
+  { key:'hcv',       label:'HCV' },
+];
+// Normalizes whatever is stored (new object shape, or a legacy plain string
+// from before this feature existed) into a consistent per-key shape.
+function normalizeLabs(v){
+  if(v && typeof v === 'object') return v;
+  if(typeof v === 'string' && v.trim()){
+    const empty = {}; LAB_KEYS.forEach(k=>empty[k.key]='');
+    return { ...empty, legacy: v.trim() };
+  }
+  return {};
+}
+// Only sub-fields that actually have data are shown, grouped as chips —
+// this is what "appears outside" the boxed inputs, on the main case card.
+function renderLabChips(v){
+  const labs = normalizeLabs(v);
+  const chips = LAB_KEYS
+    .filter(k=>labs[k.key] && String(labs[k.key]).trim())
+    .map(k=>`<span class="lab-chip">${k.label}: ${esc(labs[k.key])}</span>`);
+  if(labs.legacy) chips.push(`<span class="lab-chip">${esc(labs.legacy)}</span>`);
+  return chips.join('');
+}
+function labsIsEmpty(v){
+  const labs = normalizeLabs(v);
+  return !LAB_KEYS.some(k=>labs[k.key] && String(labs[k.key]).trim()) && !labs.legacy;
+}
+// Plain-text summary used in the case card's full-details panel and in the Excel export.
+function labsSummaryText(v){
+  const labs = normalizeLabs(v);
+  const parts = LAB_KEYS.filter(k=>labs[k.key] && String(labs[k.key]).trim()).map(k=>`${k.label}: ${labs[k.key]}`);
+  if(labs.legacy) parts.push(labs.legacy);
+  return parts.join(' | ');
+}
+
 /* ---------- Notes / Requests: task-style items with a status ---------- */
 // status is one of: 'Pending', 'Done', 'Not Available'
 function normalizeRequests(list){
@@ -767,6 +836,7 @@ function renderList(){
     const isOpen = expandedCaseIds.has(String(c.id));
     const isChecked = selectedCaseIds.has(String(c.id));
     const vitalsHtml = renderVitalityChips(c.vitality);
+    const labsHtml = renderLabChips(c.labs);
     const checkboxHtml = config.isAdmin
       ? `<input type="checkbox" class="case-check case-card-select" onclick="event.stopPropagation();toggleCaseSelection('${c.id}', this.checked)" ${isChecked?'checked':''}>`
       : '';
@@ -781,33 +851,35 @@ function renderList(){
         ${checkboxHtml}
         <div style="flex:1;min-width:0;">
           <div class="case-card-name">${esc(c.ptName)} ${isArchived?`<span class="pill pill-archived">Discharged ${esc(c.dayOut)}</span>`:''}</div>
-          <div class="case-card-diag">${c.diagnosis ? wrapWords(c.diagnosis, 14) : '-'}</div>
+          <div class="case-card-badges">
+            <span class="role-chip role-chip-senior">${esc(c.senior)||'-'}</span>
+            <span class="role-chip role-chip-consultant">${esc(c.consultant)||'-'}</span>
+            <span class="role-chip role-chip-department">${esc(c.department)||'-'}</span>
+          </div>
         </div>
         <div class="case-card-actions">
           <button class="icon-btn" onclick="event.stopPropagation();openDetail('${c.id}')" title="Edit">✏️</button>
+          <button class="icon-btn" onclick="event.stopPropagation();duplicateCase('${c.id}')" title="Duplicate (Senior / Consultant / Department only)">📄</button>
           ${exitBtnHtml}
           ${deleteBtnHtml}
         </div>
       </div>
+      <div class="case-card-diag">${c.diagnosis ? wrapWords(c.diagnosis, 14) : '-'}</div>
       <div class="case-card-brief">
         <div class="case-card-brief-col">
           <div><b>Age:</b> ${esc(c.age)||'-'}</div>
           <div><b>Admission:</b> ${c.admission ? formatDateWithDay(c.admission) : '-'}</div>
           <div><b>Day out:</b> ${esc(c.dayOut)||'-'}</div>
         </div>
-        <div class="case-card-brief-col case-card-roles-col">
-          <span class="role-chip role-chip-senior">${esc(c.senior)||'-'}</span>
-          <span class="role-chip role-chip-consultant">${esc(c.consultant)||'-'}</span>
-          <span class="role-chip role-chip-department">${esc(c.department)||'-'}</span>
-        </div>
       </div>
       ${vitalsHtml ? `<div class="case-card-vitals">${vitalsHtml}</div>` : ''}
+      ${labsHtml ? `<div class="case-card-vitals">${labsHtml}</div>` : ''}
       <div class="case-card-toggle">${isOpen? '▲ Hide full details' : '▼ Show full details'}</div>
       <div class="case-card-details ${isOpen?'open':''}">
         <div class="cd-item"><span class="k">Feeding</span><span class="v">${esc(c.feeding)||'-'}</span></div>
         <div class="cd-item"><span class="k">Drain</span><span class="v">${esc(c.drain)||'-'}</span></div>
         <div class="cd-item cd-full"><span class="k">Investigation</span><span class="v">${esc(c.investigation)||'-'}</span></div>
-        <div class="cd-item"><span class="k">Labs</span><span class="v">${esc(c.labs)||'-'}</span></div>
+        <div class="cd-item cd-full"><span class="k">Labs</span><span class="v">${esc(labsSummaryText(c.labs))||'-'}</span></div>
         <div class="cd-item"><span class="k">Rads</span><span class="v">${esc(c.rads)||'-'}</span></div>
         <div class="cd-item cd-full"><span class="k">Notes</span><span class="v">${esc(c.notes)||'-'}</span></div>
         <div class="cd-item cd-full"><span class="k">Registered / Edited by</span><span class="v">${byCell(c)}</span></div>
@@ -988,6 +1060,52 @@ async function applyBulkEdit(){
   }
 }
 
+/* ---------- Duplicate case(s) ---------- */
+// Single-card "duplicate" action: opens a fresh New Case form pre-filled with
+// ONLY Senior / Consultant (specialist) / Department — every other field
+// (patient name, diagnosis, dates, vitality, labs, notes...) starts blank.
+function duplicateCase(id){
+  const c = cases.find(x=>String(x.id)===String(id));
+  if(!c) return;
+  openForm({ senior: c.senior || '', consultant: c.consultant || '', department: c.department || '' });
+  showToast('Duplicated Senior / Consultant / Department — fill in the rest ✅');
+}
+
+// Generates a fresh, collision-safe id for a duplicated case.
+function newCaseId(salt){
+  return `${Date.now().toString(36)}${(salt||0)}${Math.random().toString(36).slice(2,8)}`;
+}
+
+// Bulk "Copy Selected" (Admin only, via the multi-select bar): clones the
+// FULL data of every selected case into a brand-new active case each, so the
+// duplicates are complete copies rather than just the doctors' names.
+async function duplicateSelected(){
+  const ids = Array.from(selectedCaseIds);
+  if(!ids.length){ showToast('Select at least one case first'); return; }
+  if(!confirm(`Copy ${ids.length} selected case(s) in full? Each will be created as a new case.`)) return;
+  let ok = 0, failed = 0;
+  for(let i=0;i<ids.length;i++){
+    const c = cases.find(x=>String(x.id)===String(ids[i]));
+    if(!c) continue;
+    // Strip id and every server-stamped trail field so the backend treats
+    // this as a brand-new case and stamps the current doctor as its creator.
+    const { id, createdByName, createdAt, updatedByName, updatedAt, dischargedByName, dischargedAt, ...rest } = c;
+    const clone = { ...rest, id: newCaseId(i) };
+    try{
+      const r = await authedFetch(`${API_CASES}/save`, {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(clone)});
+      const res = await r.json();
+      if(res.error) throw new Error(res.error);
+      ok++;
+    }catch(e){
+      console.error('duplicate-selected error:', e);
+      failed++;
+    }
+  }
+  showToast(failed ? `Copied ${ok} case(s), ${failed} failed` : `Copied ${ok} case(s) ✅`);
+  selectedCaseIds.clear();
+  await fetchList();
+}
+
 /* ---------- form ---------- */
 function fillSelect(id, options, selected){
   const el = document.getElementById(id);
@@ -1017,7 +1135,18 @@ function openForm(existing){
   document.getElementById('f_feeding').value = f.feeding || '';
   document.getElementById('f_drain').value = f.drain || '';
   document.getElementById('f_investigation').value = f.investigation || '';
-  document.getElementById('f_labs').value = f.labs || '';
+  const labs = normalizeLabs(f.labs);
+  document.getElementById('f_lab_tlc').value = labs.tlc || labs.legacy || '';
+  document.getElementById('f_lab_hgb').value = labs.hgb || '';
+  document.getElementById('f_lab_net').value = labs.net || '';
+  document.getElementById('f_lab_plt').value = labs.plt || '';
+  document.getElementById('f_lab_alb').value = labs.alb || '';
+  document.getElementById('f_lab_inr').value = labs.inr || '';
+  document.getElementById('f_lab_altast').value = labs.altast || '';
+  document.getElementById('f_lab_bilirubin').value = labs.bilirubin || '';
+  document.getElementById('f_lab_creat').value = labs.creat || '';
+  document.getElementById('f_lab_hbv').value = labs.hbv || '';
+  document.getElementById('f_lab_hcv').value = labs.hcv || '';
   document.getElementById('f_rads').value = f.rads || '';
   document.getElementById('f_notes').value = f.notes || '';
   renderRequestRows(normalizeRequests(f.requests));
@@ -1090,6 +1219,19 @@ async function saveCase(){
     rr: document.getElementById('f_vital_rr').value.trim(),
     spo2: document.getElementById('f_vital_spo2').value.trim(),
   };
+  const labs = {
+    tlc: document.getElementById('f_lab_tlc').value.trim(),
+    hgb: document.getElementById('f_lab_hgb').value.trim(),
+    net: document.getElementById('f_lab_net').value.trim(),
+    plt: document.getElementById('f_lab_plt').value.trim(),
+    alb: document.getElementById('f_lab_alb').value.trim(),
+    inr: document.getElementById('f_lab_inr').value.trim(),
+    altast: document.getElementById('f_lab_altast').value.trim(),
+    bilirubin: document.getElementById('f_lab_bilirubin').value.trim(),
+    creat: document.getElementById('f_lab_creat').value.trim(),
+    hbv: document.getElementById('f_lab_hbv').value.trim(),
+    hcv: document.getElementById('f_lab_hcv').value.trim(),
+  };
   const item = {
     id,
     ptName,
@@ -1104,7 +1246,7 @@ async function saveCase(){
     feeding: document.getElementById('f_feeding').value.trim(),
     drain: document.getElementById('f_drain').value.trim(),
     investigation: document.getElementById('f_investigation').value.trim(),
-    labs: document.getElementById('f_labs').value.trim(),
+    labs,
     rads: document.getElementById('f_rads').value.trim(),
     notes: document.getElementById('f_notes').value.trim(),
     requests: collectRequestsFromForm(),
@@ -1316,7 +1458,7 @@ async function exportToExcel(){
       'Drain': c.drain || '',
       'Investigation': c.investigation || '',
       'Day Out': c.dayOut || '',
-      'Labs': c.labs || '',
+      'Labs': labsSummaryText(c.labs),
       'Rads': c.rads || '',
       'Notes': c.notes || '',
       'Notes/Requests': normalizeRequests(c.requests).map(r=>`${r.text} [${r.status||'Pending'}]`).join(' | '),
